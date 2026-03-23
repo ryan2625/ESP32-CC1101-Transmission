@@ -20,12 +20,12 @@ extern "C" {
 }
 
 // Register values from the CC1101 datasheet
-// =============== STROBES =============== //
-constexpr uint8_t CC1101_STROBE_SRES   = 0x30;
-constexpr uint8_t CC1101_STROBE_STX    = 0x35;
-constexpr uint8_t CC1101_STROBE_SIDLE  = 0x36;
-constexpr uint8_t CC1101_STROBE_SFTX   = 0x3B;
-// ======================================= //
+// ================= STROBES ================ //
+constexpr uint8_t CC1101_STROBE_SRES      = 0x30;
+constexpr uint8_t CC1101_STROBE_STX       = 0x35;
+constexpr uint8_t CC1101_STROBE_SIDLE     = 0x36;
+constexpr uint8_t CC1101_STROBE_SFTX      = 0x3B;
+// ========================================== //
 
 // ============ CONFIG REGISTERS ============ //
 constexpr uint8_t CC1101_CONFIG_IOCFG0    = 0x02; // GDO0_CFG
@@ -37,8 +37,6 @@ constexpr uint8_t CC1101_CONFIG_PKTLEN    = 0x06;
 constexpr uint8_t CC1101_CONFIG_PKTCTRL0  = 0x08; // LENGTH_CONFIG
 
 constexpr uint8_t CC1101_CONFIG_FREQ2     = 0x0D;
-constexpr uint8_t CC1101_CONFIG_FREQ1     = 0x0E;
-constexpr uint8_t CC1101_CONFIG_FREQ0     = 0x0F;
 
 constexpr uint8_t CC1101_CONFIG_MDMCFG4   = 0x10; // DRATE_E
 constexpr uint8_t CC1101_CONFIG_MDMCFG3   = 0x11; // DRATE_M
@@ -56,30 +54,23 @@ constexpr uint8_t CC1101_STATUS_MARCSTATE = 0x35;
 // =========================================== //
 
 // =================== OTHER ================= //
-constexpr uint8_t CC1101_REG_FIFO = 0x3F;
-
+constexpr uint8_t CC1101_REG_FIFO         = 0x3F;
 // Frequency (315 MHz)
-constexpr uint8_t CC1101_VALUE_FREQ2 = 0x0C;
-constexpr uint8_t CC1101_VALUE_FREQ1 = 0x1D;
-constexpr uint8_t CC1101_VALUE_FREQ0 = 0x8A;
-
+constexpr uint8_t CC1101_VALUE_FREQ2      = 0x0C;
+constexpr uint8_t CC1101_VALUE_FREQ1      = 0x1D;
+constexpr uint8_t CC1101_VALUE_FREQ0      = 0x8A;
 // 2-FSK Modulation, Sync Mode
-constexpr uint8_t CC1101_VALUE_MDMCFG2 = 0x03;
-
+constexpr uint8_t CC1101_VALUE_MDMCFG2    = 0x03;
 // Deviation Mantissa, Exponent
-constexpr uint8_t CC1101_VALUE_DEVIATN = 0x40;
-
+constexpr uint8_t CC1101_VALUE_DEVIATN    = 0x40;
 // Data rate (25 kBaud)
-constexpr uint8_t CC1101_VALUE_MDMCFG4 = 0x89; // DRATE_E
-constexpr uint8_t CC1101_VALUE_MDMCFG3 = 0xF8; // DRATE_M
-
+constexpr uint8_t CC1101_VALUE_MDMCFG4    = 0x89; // DRATE_E
+constexpr uint8_t CC1101_VALUE_MDMCFG3    = 0xF8; // DRATE_M
 // FIFO threshold config
-constexpr uint8_t CC1101_VALUE_IOCFG0 = 0x02;
-
+constexpr uint8_t CC1101_VALUE_IOCFG0     = 0x02;
 // Transmit power
-constexpr uint8_t CC1101_VALUE_PATABLE = 0x51;
-
-constexpr uint8_t CC1101_DUMMY_BYTE = 0x00;
+constexpr uint8_t CC1101_VALUE_PATABLE    = 0x51;
+constexpr uint8_t CC1101_DUMMY_BYTE       = 0x00;
 // =========================================== //
 
 
@@ -109,7 +100,7 @@ void transmit_data(spi_device_handle_t cc1101, const uint8_t* data, size_t len, 
     }
 };
 
-void strobe_reset(spi_device_handle_t cc1101) {
+void initialize_device(spi_device_handle_t cc1101) {
     // Reset chip
     transmit_data(
         cc1101,
@@ -162,39 +153,63 @@ extern "C" void app_main(void)
     // =================== END CONFIGURE DEVICE SECTION ===================== //
 
     // =================== CONFIGURE PARAMETERS SECTION ===================== //
+    initialize_device(cc1101);
     // FREQUENCY
     transmit_data(
         cc1101,
-        (uint8_t[]){CC1101_STROBE_SRES},
+        (uint8_t[]){
+            calculate_header_byte(CC1101_CONFIG_FREQ2, false, true),
+            CC1101_VALUE_FREQ2,
+            CC1101_VALUE_FREQ1,
+            CC1101_VALUE_FREQ0,
+        },
         4,
-        "FREQ"
-        );
+        "FREQUENCY"
+    );
     // MODULATION
     transmit_data(
         cc1101,
-        (uint8_t[]){CC1101_STROBE_SRES},
-        1,
-        "SRES"
-        );
+        (uint8_t[]){
+            calculate_header_byte(CC1101_CONFIG_MDMCFG2, false, false),
+            CC1101_VALUE_MDMCFG2
+        },
+        2,
+        "MOD FORMAT"
+    );
+    transmit_data(
+        cc1101,
+        (uint8_t[]){
+            calculate_header_byte(CC1101_CONFIG_DEVIATN, false, false),
+            CC1101_VALUE_DEVIATN 
+        },
+        2,
+        "MOD DEVIATION"
+    );
     // DATA RATE
     transmit_data(
         cc1101,
-        (uint8_t[]){CC1101_STROBE_SRES},
-        1,
-        "SRES"
-        );
+        (uint8_t[]){
+            calculate_header_byte(CC1101_CONFIG_MDMCFG4, false, true),
+            CC1101_VALUE_MDMCFG4,
+            CC1101_VALUE_MDMCFG3
+        },
+        3,
+        "DATA RATE"
+    );
     // POWER
     transmit_data(
         cc1101,
-        (uint8_t[]){CC1101_STROBE_SRES},
-        1,
-        "SRES"
-        );
-    // CONFIRM ALL CONFIG VALUES
+        (uint8_t[]){
+            calculate_header_byte(CC1101_CONFIG_PATABLE, false, false),
+            CC1101_VALUE_PATABLE
+        },
+        2,
+        "POWER"
+    );
     // ================= END CONFIGURE PARAMETERS SECTION =================== //
 
-    // =================== CONFIGURE PARAMETERS SECTION ===================== //
+    // ====================== CONFIGURE FIFO SECTION ======================== //
 
-    // =================== CONFIGURE PARAMETERS SECTION ===================== //
+    // ==================== END CONFIGURE FIFO SECTION ====================== //
 
 }
