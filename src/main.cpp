@@ -26,62 +26,44 @@ constexpr uint8_t CC1101_STROBE_SRES      = 0x30;
 constexpr uint8_t CC1101_STROBE_STX       = 0x35;
 constexpr uint8_t CC1101_STROBE_SIDLE     = 0x36;
 constexpr uint8_t CC1101_STROBE_SFTX      = 0x3B;
-// ========================================== //
-
 // ============ CONFIG REGISTERS ============ //
 constexpr uint8_t CC1101_CONFIG_IOCFG0    = 0x02; // GDO0_CFG
 constexpr uint8_t CC1101_CONFIG_FIFOTHR   = 0x03; // FIFO_THR
-
 constexpr uint8_t CC1101_CONFIG_SYNC1     = 0x04;
 constexpr uint8_t CC1101_CONFIG_SYNC0     = 0x05;
 constexpr uint8_t CC1101_CONFIG_PKTLEN    = 0x06;
 constexpr uint8_t CC1101_CONFIG_PKTCTRL0  = 0x08; // LENGTH_CONFIG
-
 constexpr uint8_t CC1101_CONFIG_FREQ2     = 0x0D;
-
 constexpr uint8_t CC1101_CONFIG_MDMCFG4   = 0x10; // DRATE_E
 constexpr uint8_t CC1101_CONFIG_MDMCFG3   = 0x11; // DRATE_M
 constexpr uint8_t CC1101_CONFIG_MDMCFG2   = 0x12; // SYNC_MODE, MOD_FORMAT
 constexpr uint8_t CC1101_CONFIG_MDMCFG1   = 0x13; // NUM_PREAMBLE
-
 constexpr uint8_t CC1101_CONFIG_DEVIATN   = 0x15; // DEVIATION_E, DEVIATION_M
 constexpr uint8_t CC1101_CONFIG_MCSM1     = 0x17; // TXOFF_MODE
 constexpr uint8_t CC1101_CONFIG_PATABLE   = 0x3E;
-// =========================================== //
-
 // ============= STATUS REGISTERS ============ //
 constexpr uint8_t CC1101_STATUS_TXBYTES   = 0x3A;
 constexpr uint8_t CC1101_STATUS_MARCSTATE = 0x35;
-// =========================================== //
-
-// =================== FIFO ================= //
+// =================== FIFO ================== //
 constexpr uint8_t CC1101_REG_FIFO         = 0x3F;
-// =========================================== //
-
 // ================== VALUES ================= //
-constexpr uint8_t CC1101_VALUE_FREQ2      = 0x0C; // frequency 315 MHz
-constexpr uint8_t CC1101_VALUE_FREQ1      = 0x1D; // frequency 315 MHz
-constexpr uint8_t CC1101_VALUE_FREQ0      = 0x8A; // frequency 315 MHz
-
-constexpr uint8_t CC1101_VALUE_DEVIATN    = 0x40; // deviation m & e
-
-constexpr uint8_t CC1101_VALUE_MDMCFG2    = 0x03; // 2fsk, sync mode
-
-constexpr uint8_t CC1101_VALUE_MDMCFG4    = 0x89; // 25k baud drate e
-constexpr uint8_t CC1101_VALUE_MDMCFG3    = 0xF8; // drate m
-
-constexpr uint8_t CC1101_VALUE_MDMCFG1    = 0x22; // num preamble
-constexpr uint8_t CC1101_VALUE_SYNC1      = 0xD3; // sync words
-constexpr uint8_t CC1101_VALUE_SYNC0      = 0x91; // sync word
-constexpr uint8_t CC1101_VALUE_PKTLEN     = 0x0A; // PKT LEN 10
-constexpr uint8_t CC1101_VALUE_FIFOTHR    = 0x0E; // threshold 5 bytes in tx
-constexpr uint8_t CC1101_VALUE_PKTCTRL0   = 0x00; // fixed pkt mode
-constexpr uint8_t CC1101_VALUE_MCSM1      = 0x00; // txoffstate
-
-constexpr uint8_t CC1101_VALUE_IOCFG0     = 0x02; //GDO0 cfg
-
-constexpr uint8_t CC1101_VALUE_PATABLE    = 0x51; // power level
-constexpr uint8_t CC1101_DUMMY_BYTE       = 0x00;
+constexpr uint8_t CC1101_VALUE_FREQ2      = 0x0C; // Frequency 315 MHz High Byte
+constexpr uint8_t CC1101_VALUE_FREQ1      = 0x1D; // Frequency 315 MHz Mid Byte
+constexpr uint8_t CC1101_VALUE_FREQ0      = 0x8A; // Frequency 315 MHz Low Byte
+constexpr uint8_t CC1101_VALUE_DEVIATN    = 0x40; // 25.2 kHz Deviation Mantissa/Exponent
+constexpr uint8_t CC1101_VALUE_MDMCFG2    = 0x03; // Mod Format: 2-FSK, Sync Mode: 30/32 bits
+constexpr uint8_t CC1101_VALUE_MDMCFG4    = 0x89; // 25k Baud Rate E
+constexpr uint8_t CC1101_VALUE_MDMCFG3    = 0xF8; // 25k Baud Rate M
+constexpr uint8_t CC1101_VALUE_SYNC1      = 0xD3; // Sync Word 1
+constexpr uint8_t CC1101_VALUE_SYNC0      = 0x91; // Sync Word 0
+constexpr uint8_t CC1101_VALUE_MDMCFG1    = 0x22; // Preamble Length: 4 Bytes
+constexpr uint8_t CC1101_VALUE_PKTLEN     = 0x0A; // Packet Length: 10 Bytes
+constexpr uint8_t CC1101_VALUE_FIFOTHR    = 0x0E; // TX Threshold: 5 Bytes
+constexpr uint8_t CC1101_VALUE_PKTCTRL0   = 0x00; // Packet Mode: Fixed
+constexpr uint8_t CC1101_VALUE_MCSM1      = 0x30; // TXOFF Mode: IDLE
+constexpr uint8_t CC1101_VALUE_IOCFG0     = 0x02; // GDO0 Config: FIFO Threshold Alert
+constexpr uint8_t CC1101_VALUE_PATABLE    = 0x51; // Output Power: 0 dBm
+constexpr uint8_t CC1101_DUMMY_BYTE       = 0x00; 
 // =========================================== //
 
 
@@ -222,8 +204,6 @@ extern "C" void app_main(void)
         2,
         "POWER"
     );
-    // Simple helper function to read back the registers we just programmed for debugging purposes
-    log_reg_values(cc1101);
     // ================= END CONFIGURE PARAMETERS SECTION =================== //
 
     // ====================== CONFIGURE FIFO SECTION ======================== //
@@ -250,7 +230,7 @@ extern "C" void app_main(void)
         "PREAMBLE"
     );
 
-// SYNC MODE ( & MOD FORMAT)
+    // SYNC MODE ( & MOD FORMAT)
     spi_transaction(
         cc1101,
         (uint8_t[]){
@@ -261,7 +241,7 @@ extern "C" void app_main(void)
         "SYNC MODE"
     );
 
-// PACKET LENGTH MODE
+    // PACKET LENGTH MODE
     spi_transaction(
         cc1101,
         (uint8_t[]){
@@ -281,7 +261,7 @@ extern "C" void app_main(void)
         },
         2,
         "PKTLEN"
-);
+    );
 
     // TXOFF MODE
     spi_transaction(
@@ -299,10 +279,41 @@ extern "C" void app_main(void)
         cc1101,
         (uint8_t[]){
             calculate_header_byte(CC1101_REG_FIFO, false, true),
-
+            0x01,
+            0x01,
+            0x01,
+            0x01,
+            0x01,
+            0x01,
+            0x01,
+            0x01,
+            0x01,
+            0x01,
         },
-        1,
+        10,
         "TX FIFO"
+    );
+
+    // GDO0 CONFIG
+    spi_transaction(
+        cc1101,
+        (uint8_t[]){
+            calculate_header_byte(CC1101_CONFIG_IOCFG0, false, false),
+            CC1101_VALUE_IOCFG0
+        },
+        2,
+        "GDO0 CONFIG"
+    );
+
+    // FIFO THR
+    spi_transaction(
+        cc1101,
+        (uint8_t[]){
+            calculate_header_byte(CC1101_CONFIG_FIFOTHR, false, false),
+            CC1101_VALUE_FIFOTHR
+        },
+        2,
+        "FIFO THR"
     );
 
     // ENTER TX MODE
@@ -316,5 +327,5 @@ extern "C" void app_main(void)
     );
 
     // ==================== END CONFIGURE FIFO SECTION ====================== //
-
+    log_reg_values(cc1101); // Logs all values we just entered for debugging purposes
 }
