@@ -434,14 +434,10 @@ Most of the coding examples will be shown in the [Sending Data in C++](#7-sendin
     - Set bit positions 5–0 to `001101` for the FREQ2 register address. Since the address field is 6 bits wide, the original value of `1101` (`0x0D`) is padded with leading zeros.
     - The entire header byte is `01001101`, or `0x4D`
 - Convert 793,994 to hex which is `0x0C1D8A`, and split this into three bytes.
-- Send the transaction byte, followed by the three bytes representing the FREQ value
+- Send the header byte, followed by the three bytes representing the FREQ value
 
->Note: When setting the burst bit to `1` in write mode, data is written sequentially to consecutive registers with increasing address values. Refer to the register addresses listed below.
-<div align="center">
+>Note: When setting the burst bit to `1` in write mode, data is written sequentially to consecutive registers with increasing address values. Refer to the register addresses listed below. <div align="center"><img src="Assets/Frequency_Reg.png" width="100%"></div> 
 
-<img src="Assets/Frequency_Reg.png" width="100%">
-
-</div> 
 <br>
 
 ```cpp
@@ -453,14 +449,14 @@ extern "C" void app_main(void) {
     // 0x0C goes to FREQ2, 0x1D to FREQ1, and 0x8A to FREQ0
 
     transmit_data(
-        cc1101, //device handle
-        (uint8_t[]){0x4D, 0x0C, 0x1D, 0x8A}, // bytes to transmit
-        4, // how many bytes we are transmitting
-        "FREQ" // name of operation
+        cc1101, // Device handle
+        (uint8_t[]){0x4D, 0x0C, 0x1D, 0x8A}, // Bytes to transmit
+        4, // How many bytes we are transmitting
+        "FREQ" // Name of operation
     );
 }
 ```
-Where [`transmit_data`](https://github.com/ryan2625/CC1101-TX/blob/main/src/main.cpp) is a helper function defined in `main.cpp`.
+Where [`transmit_data`](https://github.com/ryan2625/CC1101-TX/blob/main/src/main.cpp) is a helper function defined in `main.cpp`. This code builds off of what we created in the first guide.
 
 
 # 3. Modulation
