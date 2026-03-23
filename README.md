@@ -823,7 +823,7 @@ extern "C" void app_main(void) {
     // as read-only is GPIO_MODE_INPUT
     gpio_set_direction(GPIO_NUM_4, GPIO_MODE_INPUT); 
     ...
-    gpio_get_level(GPIO_NUM_4);
+    gpio_get_level(GPIO_NUM_4); // Returns 1 or 0
     ...
 }
 ```
