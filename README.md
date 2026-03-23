@@ -435,7 +435,7 @@ Most of the coding examples will be shown in the [Sending Data in C++](#7-sendin
 - Convert 793,994 to hex which is `0x0C1D8A`, and split this into three bytes.
 - Send the header byte, followed by the three bytes representing the FREQ value
 
->Note: When setting the burst bit to `1` in write mode, data is written sequentially to consecutive registers with increasing address values; we only need to specify the address of the start register for burst access. Refer to the register addresses listed below. <div align="center"><img src="Assets/Frequency_Reg.png" width="100%"></div> 
+>Note: When setting the burst bit to `1` in write mode, data is written sequentially to consecutive registers with increasing address values; we only need to specify the address of the first register for burst access. Refer to the register addresses listed below. <div align="center"><img src="Assets/Frequency_Reg.png" width="100%"></div> 
 
 <br>
 
