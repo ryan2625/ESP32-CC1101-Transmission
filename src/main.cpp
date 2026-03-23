@@ -20,15 +20,14 @@ extern "C" {
 }
 
 // Register values from the CC1101 datasheet
-
-// STROBES
+// =============== STROBES =============== //
 constexpr uint8_t CC1101_STROBE_SRES   = 0x30;
 constexpr uint8_t CC1101_STROBE_STX    = 0x35;
 constexpr uint8_t CC1101_STROBE_SIDLE  = 0x36;
 constexpr uint8_t CC1101_STROBE_SFTX   = 0x3B;
+// ======================================= //
 
-
-// CONFIGURATION REGISTERS
+// ============ CONFIG REGISTERS ============ //
 constexpr uint8_t CC1101_CONFIG_IOCFG0    = 0x02; // GDO0_CFG
 constexpr uint8_t CC1101_CONFIG_FIFOTHR   = 0x03; // FIFO_THR
 
@@ -49,14 +48,39 @@ constexpr uint8_t CC1101_CONFIG_MDMCFG1   = 0x13; // NUM_PREAMBLE
 constexpr uint8_t CC1101_CONFIG_DEVIATN   = 0x15; // DEVIATION_E, DEVIATION_M
 constexpr uint8_t CC1101_CONFIG_MCSM1     = 0x17; // TXOFF_MODE
 constexpr uint8_t CC1101_CONFIG_PATABLE   = 0x3E;
+// =========================================== //
 
-// STATUS REGISTERS
+// ============= STATUS REGISTERS ============ //
 constexpr uint8_t CC1101_STATUS_TXBYTES   = 0x3A;
 constexpr uint8_t CC1101_STATUS_MARCSTATE = 0x35;
+// =========================================== //
 
-// OTHER
-constexpr uint8_t CC1101_REG_FIFO      = 0x3F;
-constexpr uint8_t CC1101_DUMMY_BYTE    = 0x00;
+// =================== OTHER ================= //
+constexpr uint8_t CC1101_REG_FIFO = 0x3F;
+
+// Frequency (315 MHz)
+constexpr uint8_t CC1101_VALUE_FREQ2 = 0x0C;
+constexpr uint8_t CC1101_VALUE_FREQ1 = 0x1D;
+constexpr uint8_t CC1101_VALUE_FREQ0 = 0x8A;
+
+// 2-FSK Modulation, Sync Mode
+constexpr uint8_t CC1101_VALUE_MDMCFG2 = 0x03;
+
+// Deviation Mantissa, Exponent
+constexpr uint8_t CC1101_VALUE_DEVIATN = 0x40;
+
+// Data rate (25 kBaud)
+constexpr uint8_t CC1101_VALUE_MDMCFG4 = 0x89; // DRATE_E
+constexpr uint8_t CC1101_VALUE_MDMCFG3 = 0xF8; // DRATE_M
+
+// FIFO threshold config
+constexpr uint8_t CC1101_VALUE_IOCFG0 = 0x02;
+
+// Transmit power
+constexpr uint8_t CC1101_VALUE_PATABLE = 0x51;
+
+constexpr uint8_t CC1101_DUMMY_BYTE = 0x00;
+// =========================================== //
 
 
 uint8_t calculate_header_byte(uint8_t address, bool read, bool burst) {
@@ -69,7 +93,7 @@ uint8_t calculate_header_byte(uint8_t address, bool read, bool burst) {
     address, we can OR it by a burst bit at position 6 which is 0100 0000 (0x40). 
     The resulting byte is 0111 1111 (0x7F).
     */
-    return address | (read ? 0x80 : 0x00) | (burst ? 0x40 : 0x00)
+    return address | (read ? 0x80 : 0x00) | (burst ? 0x40 : 0x00);
 }
 
 void transmit_data(spi_device_handle_t cc1101, const uint8_t* data, size_t len,  const std::string& operation) {
@@ -92,21 +116,21 @@ void strobe_reset(spi_device_handle_t cc1101) {
         (uint8_t[]){CC1101_STROBE_SRES},
         1,
         "SRES"
-    );
+        );
     // Put CC1101 in idle mode
     transmit_data(
         cc1101,
         (uint8_t[]){CC1101_STROBE_SIDLE},
         1,
         "SIDLE"
-    );
+        );
     // Flush transmit buffer: in order to send the SFTX strobe, CC1101 must be in certain states (like idle mode)
     transmit_data(
         cc1101,
         (uint8_t[]){CC1101_STROBE_SFTX},
         1,
         "SFTX"
-    );
+        );
 };
 // To write c++ in the ESP-IDF, we have to include extern "C"
 extern "C" void app_main(void)
@@ -139,13 +163,34 @@ extern "C" void app_main(void)
 
     // =================== CONFIGURE PARAMETERS SECTION ===================== //
     // FREQUENCY
-
+    transmit_data(
+        cc1101,
+        (uint8_t[]){CC1101_STROBE_SRES},
+        4,
+        "FREQ"
+        );
     // MODULATION
-
+    transmit_data(
+        cc1101,
+        (uint8_t[]){CC1101_STROBE_SRES},
+        1,
+        "SRES"
+        );
     // DATA RATE
-
+    transmit_data(
+        cc1101,
+        (uint8_t[]){CC1101_STROBE_SRES},
+        1,
+        "SRES"
+        );
     // POWER
-
+    transmit_data(
+        cc1101,
+        (uint8_t[]){CC1101_STROBE_SRES},
+        1,
+        "SRES"
+        );
+    // CONFIRM ALL CONFIG VALUES
     // ================= END CONFIGURE PARAMETERS SECTION =================== //
 
     // =================== CONFIGURE PARAMETERS SECTION ===================== //
