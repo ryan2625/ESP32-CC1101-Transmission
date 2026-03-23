@@ -466,7 +466,7 @@ The CC1101 supports amplitude, frequency, and phase modulation formats. For this
 
 ![Mod Format Register](Assets/MOD_FORMAT.png)
 
-Page 77: Modulation Format Value Mappings in the `MDMCFG2.MOD_FORMAT` Field
+Page 77: Modulation Format Value Mappings in the `MDMCFG2.MOD_FORMAT` Field at `0x12`
 
 </div>
 
@@ -609,12 +609,12 @@ This guide uses the CC1101 packet handler (TX FIFO packet mode), not synchronous
 ### Preamble Bits
 Preamble bits (or bytes) are a sequence of alternating bits sent at the start of a transmission that serve multiple purposes. The first is that they denote the beginning of a packet, letting the receiver know a transmission is starting. The second purpose is that they assist in synchronizing the transmission timing between the receiver and the transmitter to ensure data is processed correctly. The overall purpose of the preamble bits is to help tune the receiver before meaningful data is sent.
 
-In the CC1101, the amount of preamble bytes sent is configured in the `MDMCFG1.NUM_PREAMBLE` field. The datasheet recommends using a 4-byte preamble (32 bits). When the radio enters `TX` mode, it will keep transmitting the preamble bytes you configured infinitely until a byte is written to the TX FIFO. 
+In the CC1101, the amount of preamble bytes sent is configured in the `MDMCFG1.NUM_PREAMBLE` field at `0x13`. The datasheet recommends using a 4-byte preamble (32 bits). When the radio enters `TX` mode, it will keep transmitting the preamble bytes you configured infinitely until a byte is written to the TX FIFO. 
 
 ### Synchronization Word
 The Synchronization word's primary purpose is to mark the exact start of valid data in a signal. It can also help with network filtering, where a receiver can look at the sync word of a signal and ignore signals that do not match the expected sync word. More information on the sync word can be found in section **14.3: Byte Synchronization**.
 
-The CC1101 recommends implementing a 4-byte sync word, stored in the `SYNC1` and `SYNC0` registers. To reach the recommended 4 bytes in a sync word, we will have to send the `MDMCFG2.SYNC_MODE` field either a 3 (`011`) or a 7 (`111`). This will duplicate the 2 bytes we have stored in `SYNC1` and `SYNC0` and send 4 bytes in total when we transmit data.
+The CC1101 recommends implementing a 4-byte sync word, stored in the `SYNC1` at `0x04` and `SYNC0` at `0x05` registers. To reach the recommended 4 bytes in a sync word, we will have to send the `MDMCFG2.SYNC_MODE` field either a 3 (`011`) or a 7 (`111`). This will duplicate the 2 bytes we have stored in `SYNC1` and `SYNC0` and send 4 bytes in total when we transmit data.
 
 <div align='center'>
 
@@ -627,8 +627,8 @@ Page 77: `MDMCFG2.SYNC_MODE` Field
 >Note: If you have a sync word, you must always include preamble bits and vice versa. Both of these will be automatically inserted at the start of a transmission in setting 3 and 7; we will not have to manually send them.
 
 ### Packet Length
-The CC1101 expects a packet length mode to be configured in the `PKTCTRL0.LENGTH_CONFIG` field. There are three different modes for packet length...
-1. Fixed packet length mode: the packet length is predefined and must be the same for every transmission. This length will have to be configured separately in the `PKTLEN` register. This is the mode we will be using in our implementation later on.
+The CC1101 expects a packet length mode to be configured in the `PKTCTRL0.LENGTH_CONFIG` field at `0x08`. There are three different modes for packet length...
+1. Fixed packet length mode: the packet length is predefined and must be the same for every transmission. This length will have to be configured separately in the `PKTLEN` register at `0x06`. This is the mode we will be using in our implementation later on.
 2. Variable packet length mode: the length of the packet is set by the first byte written to the TX FIFO instead of the `PKTLEN` register. Sequentially, this byte appears after the sync word.
 3. Infinite packet length mode: there is no set length of the packet, and the CC1101 will continually transmit data it is given. 
 
@@ -736,7 +736,7 @@ Page 31: Chip Status Byte Format
 ## TX FIFO Threshold
 As stated earlier, the TX FIFO is a 64 byte buffer that holds the data you will transmit. Causing overflow or underflow in this buffer can cause error states and lead to unpredictable radio behavior. In addition to the chip status byte, there is another mechanism to assist us with managing the TX FIFO called the FIFO threshold.
 
-In `TX` mode, the FIFO threshold is essentially a way to warn us when the number of bytes in the TX FIFO crosses a certain level. We can set the threshold by sending a value to the `FIFOTHR.FIFO_THR` register field. Keep in mind this threshold is simply a warning, and does not prevent underflow on its own.
+In `TX` mode, the FIFO threshold is essentially a way to warn us when the number of bytes in the TX FIFO crosses a certain level. We can set the threshold by sending a value to the `FIFOTHR.FIFO_THR` register field at `0x03`. Keep in mind this threshold is simply a warning, and does not prevent underflow on its own.
 
 For example, if we send the value `1110` to the register, we will get a warning when there is only 5 bytes left in the TX FIFO. The mapping of values to thresholds is seen below.
 
