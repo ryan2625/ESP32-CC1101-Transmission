@@ -692,7 +692,7 @@ During this flow, the radio can enter any of the scenarios outlined in the next 
 
 ### TX Mode Scenarios
 There are three scenarios that relate to `TX` mode that can occur either when writing to the TX FIFO or when a transmission finishes. These three scenarios are: 
-1. The radio moves into the next state determined by the `MCSM1.TXOFF_MODE` field
+1. The radio moves into the next state determined by the `MCSM1.TXOFF_MODE` field at address `0x17`
 3. The `TXFIFO_UNDERFLOW` state
 2. TX FIFO Overflow
 
