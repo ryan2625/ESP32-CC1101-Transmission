@@ -98,7 +98,7 @@ uint8_t calculate_header_byte(uint8_t address, bool read, bool burst) {
     return address | (read ? 0x80 : 0x00) | (burst ? 0x40 : 0x00);
 }
 
-void transmit_data(spi_device_handle_t cc1101, const uint8_t* data, size_t len,  const std::string& operation) {
+void spi_transaction(spi_device_handle_t cc1101, const uint8_t* data, size_t len,  const std::string& operation) {
     spi_transaction_t t = {};
     uint8_t rx[len];
     t.tx_buffer = data;
@@ -113,21 +113,21 @@ void transmit_data(spi_device_handle_t cc1101, const uint8_t* data, size_t len, 
 
 void initialize_device(spi_device_handle_t cc1101) {
     // Reset chip
-    transmit_data(
+    spi_transaction(
         cc1101,
         (uint8_t[]){CC1101_STROBE_SRES},
         1,
         "SRES"
         );
     // Put CC1101 in idle mode
-    transmit_data(
+    spi_transaction(
         cc1101,
         (uint8_t[]){CC1101_STROBE_SIDLE},
         1,
         "SIDLE"
         );
     // Flush transmit buffer: in order to send the SFTX strobe, CC1101 must be in certain states (like idle mode)
-    transmit_data(
+    spi_transaction(
         cc1101,
         (uint8_t[]){CC1101_STROBE_SFTX},
         1,
@@ -166,7 +166,7 @@ extern "C" void app_main(void)
     // =================== CONFIGURE PARAMETERS SECTION ===================== //
     initialize_device(cc1101);
     // FREQUENCY
-    transmit_data(
+    spi_transaction(
         cc1101,
         (uint8_t[]){
             calculate_header_byte(CC1101_CONFIG_FREQ2, false, true),
@@ -178,7 +178,7 @@ extern "C" void app_main(void)
         "FREQUENCY"
     );
     // MODULATION
-    transmit_data(
+    spi_transaction(
         cc1101,
         (uint8_t[]){
             calculate_header_byte(CC1101_CONFIG_MDMCFG2, false, false),
@@ -187,7 +187,7 @@ extern "C" void app_main(void)
         2,
         "MOD FORMAT"
     );
-    transmit_data(
+    spi_transaction(
         cc1101,
         (uint8_t[]){
             calculate_header_byte(CC1101_CONFIG_DEVIATN, false, false),
@@ -197,7 +197,7 @@ extern "C" void app_main(void)
         "MOD DEVIATION"
     );
     // DATA RATE
-    transmit_data(
+    spi_transaction(
         cc1101,
         (uint8_t[]){
             calculate_header_byte(CC1101_CONFIG_MDMCFG4, false, true),
@@ -208,7 +208,7 @@ extern "C" void app_main(void)
         "DATA RATE"
     );
     // POWER
-    transmit_data(
+    spi_transaction(
         cc1101,
         (uint8_t[]){
             calculate_header_byte(CC1101_CONFIG_PATABLE, false, false),
@@ -223,7 +223,7 @@ extern "C" void app_main(void)
 
     // ====================== CONFIGURE FIFO SECTION ======================== //
     // SYNC WORD
-    transmit_data(
+    spi_transaction(
         cc1101,
         (uint8_t[]){
             calculate_header_byte(CC1101_CONFIG_SYNC1, false, true),
@@ -235,7 +235,7 @@ extern "C" void app_main(void)
     );
 
     // PREAMBLE LENGTH
-    transmit_data(
+    spi_transaction(
         cc1101,
         (uint8_t[]){
             calculate_header_byte(CC1101_CONFIG_MDMCFG1, false, false),
@@ -246,7 +246,7 @@ extern "C" void app_main(void)
     );
 
 // SYNC MODE ( & MOD FORMAT)
-    transmit_data(
+    spi_transaction(
         cc1101,
         (uint8_t[]){
             calculate_header_byte(CC1101_CONFIG_MDMCFG2, false, false),
@@ -257,7 +257,7 @@ extern "C" void app_main(void)
     );
 
 // PACKET LENGTH MODE
-    transmit_data(
+    spi_transaction(
         cc1101,
         (uint8_t[]){
             calculate_header_byte(CC1101_CONFIG_PKTCTRL0, false, false),
@@ -268,7 +268,7 @@ extern "C" void app_main(void)
     );
 
     // FIXED PACKET LENGTH
-    transmit_data(
+    spi_transaction(
         cc1101,
         (uint8_t[]){
             calculate_header_byte(CC1101_CONFIG_PKTLEN, false, false),
@@ -279,7 +279,7 @@ extern "C" void app_main(void)
 );
 
     // TXOFF MODE
-    transmit_data(
+    spi_transaction(
         cc1101,
         (uint8_t[]){
             calculate_header_byte(CC1101_CONFIG_MCSM1, false, false),
@@ -290,7 +290,7 @@ extern "C" void app_main(void)
     );
 
     // WRITE TO TX FIFO
-        transmit_data(
+        spi_transaction(
         cc1101,
         (uint8_t[]){
             calculate_header_byte(CC1101_REG_FIFO, false, true),
@@ -301,7 +301,7 @@ extern "C" void app_main(void)
     );
 
     // ENTER TX MODE
-    transmit_data(
+    spi_transaction(
         cc1101,
         (uint8_t[]){
             CC1101_STROBE_STX
