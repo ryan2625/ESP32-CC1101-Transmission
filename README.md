@@ -456,7 +456,7 @@ extern "C" void app_main(void) {
     );
 }
 ```
-Where [`transmit_data`](https://github.com/ryan2625/CC1101-TX/blob/main/src/main.cpp) is a helper function defined in `main.cpp`. This code builds off of what we created in the first guide.
+Where [`transmit_data`](https://github.com/ryan2625/CC1101-TX/blob/main/src/main.cpp) is a helper function defined in `main.cpp`. 
 
 
 # 3. Modulation
