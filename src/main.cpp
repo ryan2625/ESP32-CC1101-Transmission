@@ -53,8 +53,11 @@ constexpr uint8_t CC1101_STATUS_TXBYTES   = 0x3A;
 constexpr uint8_t CC1101_STATUS_MARCSTATE = 0x35;
 // =========================================== //
 
-// =================== OTHER ================= //
+// =================== FIFO ================= //
 constexpr uint8_t CC1101_REG_FIFO         = 0x3F;
+// =========================================== //
+
+// ================== VALUES ================= //
 // Frequency (315 MHz)
 constexpr uint8_t CC1101_VALUE_FREQ2      = 0x0C;
 constexpr uint8_t CC1101_VALUE_FREQ1      = 0x1D;
