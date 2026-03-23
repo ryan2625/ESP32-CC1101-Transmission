@@ -105,10 +105,15 @@ void spi_transaction(spi_device_handle_t cc1101, const uint8_t* data, size_t len
     t.rx_buffer = rx; // rx[0] will always be the Chip Status Byte (section 10.1 of the datasheet)
     t.length = len * 8;
     ESP_ERROR_CHECK(spi_device_polling_transmit(cc1101, &t));
-    ESP_LOGI("CC1101", "Operation: %s", operation.c_str());
+    char buffer[256] = {0};
+    int offset = 0;
+    offset += snprintf(buffer + offset, sizeof(buffer) - offset,
+                    "Operation: %s | ", operation.c_str());
     for (size_t i = 0; i < len; ++i) {
-        ESP_LOGI("CC1101_RX", "rx[%zu] = 0x%02X", i, rx[i]);
+        offset += snprintf(buffer + offset, sizeof(buffer) - offset,
+                        "0x%02X ", rx[i]);
     }
+    ESP_LOGI("CC1101", "%s", buffer);
 };
 
 void initialize_device(spi_device_handle_t cc1101) {

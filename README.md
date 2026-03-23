@@ -61,14 +61,11 @@ This README will heavily reference the official **[TI CC1101 transceiver datashe
         - [Error Recovery](#error-recovery)
     - [TX FIFO Threshold](#tx-fifo-threshold)
         - [Accessing the `GDO0` Pin](#accessing-the-gdo0-pin)
-
 7. [Sending Data in C++](#7-sending-data-in-c)
    - [Configuring the SPI Bus](#configuring-the-spi-bus)  
    - [Helper Functions](#helper-functions)
-   - [Setting the Frequency Parameter](#setting-the-frequency-parameter)  
-   - [Setting the Modulation Parameter](#setting-the-modulation-parameter)  
-   - [Setting the Bit Rate Parameter](#setting-the-bit-rate-parameter)  
-   - [Setting the Transmit Power Parameter](#setting-the-transmit-power-parameter)  
+   - [Configuring Signal Parameters](#configuring-signal-parameters)
+   - [Configuring Transmission Parameters](#configuring-Transmission-parameters)
    - [Transmitting Data](#transmitting-data)  
    - [Proving the Transmission Was Successful](#proving-the-transmission-was-successful)
 
@@ -849,10 +846,9 @@ uint8_t cc1101_addr(uint8_t reg, bool read, bool burst) {
 ```
 
 maybe explain the transmit function briefly and link it in the freq section
-## Setting the Frequency Parameter
-## Setting the Modulation Parameter
-## Setting the Bit Rate Parameter
-## Setting the Transmit Power Parameter
+
+## Configuring Signal Parameters
+## Configuring Transmission Parameters
 ## Transmitting Data
 ## Proving the Transmission Was Successful
 # 8. Datasheet and Theory Abstraction in Libraries
