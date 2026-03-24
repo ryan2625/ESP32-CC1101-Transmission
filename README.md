@@ -853,15 +853,13 @@ void spi_transaction(spi_device_handle_t cc1101, const uint8_t* data, size_t len
 - The `tx_buffer` is filled with the data we send, and the `rx_buffer` is filled with the response from the CC1101 which we can read off after the transaction.
 - [`spi_device_polling_transmit`](https://docs.espressif.com/projects/esp-idf/en/stable/esp32/api-reference/peripherals/spi_master.html#_CPPv427spi_device_polling_transmit19spi_device_handle_tP17spi_transaction_t) is the function from the ESP-IDF API that performs the actual SPI transaction.
 - `rx_buffer[0]` will always be the chip status byte.
-- `tx_buffer[0]` will be the header byte or the byte to send a command strobe
+- `tx_buffer[0]` will be the header byte or the byte used to send a command strobe
 
 ### `calculate_header_byte`
 
 As previously mentioned, the header byte in an SPI transaction consists of a R/W bit, a burst bit, and a 6-bit address. If you are writing to a register without burst access (R/W bit = `0`, burst bit = `0`), the header byte will be the exact same as the register address.
 
 If you are reading, using burst access, or both, the header byte changes by a fixed amount. We can use the [bitwise `OR` operator on the register value](https://www.geeksforgeeks.org/dsa/bitwise-or-operator-in-programming/) to construct the final header byte to send.
-
----
 
 Example: Suppose you want to write to the register `FREQ2`, which has the address `0x0F` (`1111` in binary).
 
@@ -905,7 +903,7 @@ uint8_t calculate_header_byte(uint8_t reg, bool read, bool burst) {
 
 Where `|` is the C++ bitwise `OR` operator. This approach lets you store register addresses as constants and dynamically modify them depending on whether you are performing a read, write, or burst operation.
 
-## Configuring Signal Parameters
+## Configuring Registers
 Configuring the registers is a very repetitive task. See the section [Setting the Frequency in C++](#setting-the-frequency-in-c) for an example of what this looks like. One thing to note about configuring parameters in our program is that we are storing our register addresses in constants such as:
 
 ```cpp 
