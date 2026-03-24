@@ -8,7 +8,9 @@
 
 This project's primary goal is to demonstrate how to transmit a signal using the CC1101 transceiver with the ESP-IDF framework. We will also explore how to interpret and navigate long technical datasheets, particularly those for RF devices. This guide is intended for readers looking to get started writing firmware for any embedded device.
 
-Reading [my previous writeup](https://github.com/ryan2625/ESP32-CC1101/tree/main?tab=readme-ov-file#esp32-cc1101) first will be very helpful for following this guide. In that writeup, I discuss the software and hardware prerequisites, as well as explain fundamental concepts about embedded devices. It also shows the more rudimentary task of reading a status register inside of the CC1101. It is far more complex to transmit a radio signal with our device and the theory can be difficult to understand, so ensure you are comfortable with the topics in that guide before proceeding.
+Reading [my previous writeup](https://github.com/ryan2625/ESP32-CC1101/tree/main?tab=readme-ov-file#esp32-cc1101) first will be very helpful for following this guide. In that writeup, I discuss the software and hardware prerequisites, as well as explain fundamental concepts about embedded devices. It also shows the more rudimentary task of reading a status register inside of the CC1101. 
+
+It is far more complex to transmit a radio signal with our device and the theory can be difficult to understand, so ensure you are comfortable with the topics in that guide before proceeding.
 
 In addition to the steps outlined in my first guide, transmitting a signal with the CC1101 requires multiple stages:
 
@@ -119,7 +121,9 @@ To preserve all other default values while only updating the `FOC_PRE_K` field, 
 >Note: An online [binary to hex calculator](https://www.rapidtables.com/convert/number/binary-to-hex.html) can be helpful for converting register values.
 
 ## Navigating the Datasheet
-The CC1101 datasheet is over 100 pages long and contains many diagrams, equations, and tables detailing various properties of the device. If you have never worked with a datasheet before, it can be difficult to know where to begin. To approach this, we will work backwards from our goal of transmitting a signal with the CC1101 and think about what properties we need to configure in order to achieve this. **Section 8: Configuration Overview** gives a holistic account of the radio's different functions and will be helpful in guiding our intuition. We can separate the datasheet sections into three different categories.
+The CC1101 datasheet is over 100 pages long and contains many diagrams, equations, and tables detailing various properties of the device. If you have never worked with a datasheet before, it can be difficult to know where to begin. To approach this, we will work backwards from our goal of transmitting a signal with the CC1101 and think about what properties we need to configure in order to achieve this.
+
+ **Section 8: Configuration Overview** gives a holistic account of the radio's different functions and will be helpful in guiding our intuition. We can separate the datasheet sections into three different categories.
 
 1. The first category includes sections regarding general configuration. This includes how we can communicate with the CC1101, any specific power-on sequence the device requires, and other basic setup details.
 
@@ -337,7 +341,7 @@ Every radio transmission has specific parameters that must be configured, regard
 
 # 2. Frequency Programming
 ## **Section 21: Frequency Programming** Overview
-Frequency programming in the CC1101 is a channel oriented system. This means that you can store multiple frequencies inside registers and switch between them instantaneously. In this guide, we will only be configuring one frequency, so the parts in the datasheet regarding the `MDMCFG0.CHANSPC_M`, `MDMCFG1.CHANSPC_E`, `FSCTRL1.FREQ_IF`, and `CHANNR.CHAN` channel fields can be ignored for simplicity. The frequency can only be changed while the radio is in `IDLE` mode.
+Frequency programming in the CC1101 is a channel oriented system. This means that you can store multiple frequencies inside registers and switch between them instantaneously. In this guide, we will only be configuring one frequency, so the parts in the datasheet regarding the `MDMCFG0.CHANSPC_M`, `MDMCFG1.CHANSPC_E`, `FSCTRL1.FREQ_IF`, and `CHANNR.CHAN` channel fields can be ignored for simplicity. Note that parameters such as the frequency can only be changed while the radio is in `IDLE` mode.
 
 The frequency is stored as a 24 bit word split across three registers containing 1 byte each: `FREQ2`, `FREQ1`, and `FREQ0`. Table 45 shows the  addresses to each register (`0x0D`, `0x0E`, and `0x0F` respectively).
 
@@ -425,15 +429,19 @@ Page 75: Frequency Registers
 >Note: The upper two bits of `FREQ2` are always set to 0 (not used). This is because the CC1101 is a sub-1 GHz transceiver. If we could hypothetically use all 24 bits and substitute that value into the carrier frequency equation, it might push the calculated frequency into the GHz range. This would be beyond the hardware capabilities of the CC1101.
 
 ### Setting the Frequency in C++
-More coding examples will be shown in the [Sending Data in C++](#7-sending-data-in-c) section of this guide. For now, we will walk through a single example of setting the carrier frequency. We will use the value we calculated earlier, FREQ ≈ `793,994`, that corresponds to setting the frequency to 315 MHz. Remember that communication with the CC1101 starts with a header (or transaction) byte [following this format](https://github.com/ryan2625/ESP32-CC1101?tab=readme-ov-file#expected-transaction-format) outlined in my first guide.
+Most of the coding examples will be shown in the [Sending Data in C++](#7-sending-data-in-c) section of this guide. As a quick reference, we walk through setting the frequency before we move on to the next section of the guide.
 
-- Construct the header byte:
+We will use the value we calculated earlier, FREQ ≈ `793,994`, that corresponds to setting the frequency to 315 MHz. Remember that communication with the CC1101 starts with a header byte [following a specific format](https://github.com/ryan2625/ESP32-CC1101?tab=readme-ov-file#expected-transaction-format) outlined in my first guide.
+
+We must do the following to set the frequency:
+
+- Construct the header byte.
     - Set bit position 7 of the byte to `0` to use write mode.
     - Set bit position 6 to `1` to denote burst access. This will let us write to all three frequency registers in one transaction.
     - Set bit positions 5–0 to `001101` for the FREQ2 register address. Since the address field is 6 bits wide, the original value of `1101` (`0x0D`) is padded with leading zeros.
-    - The entire header byte is `01001101`, or `0x4D`
+    - The entire header byte is `01001101`, or `0x4D`.
 - Convert `793,994` to hex which is `0x0C1D8A`, and split this into three bytes.
-- Send the header byte, followed by the three bytes representing the FREQ value
+- Send the header byte, followed by the three bytes representing the FREQ value.
 
 >Note: When setting the burst bit to `1` in write mode, data is written sequentially to consecutive registers with increasing address values; we only need to specify the address of the first register for burst access. Refer to the register addresses listed below. <div align="center"><img src="Assets/Frequency_Reg.png" width="100%"></div> 
 
@@ -1057,7 +1065,7 @@ I (4367) CC1101: Operation: READ TXBYTES | 0x70 0x80
 I (4367) CC1101: GDO0 level: 0
 ```
 
-Since we only have 2 bytes in our TX FIFO, this means the radio will enter the `TXFIFO_UNDERFLOW` state. We can confirm this since the chip status byte value is `0x70` and the `TXBYTES` register is `0x80`.
+Since we only have 2 bytes in our TX FIFO, this means the radio will enter the `TXFIFO_UNDERFLOW` state. We can confirm this since the chip status byte value is `0x70` and the `TXBYTES` register value is `0x80`.
 
 ## Proving the Transmission Was Successful
 # 8. Datasheet and Theory Abstraction in Libraries
