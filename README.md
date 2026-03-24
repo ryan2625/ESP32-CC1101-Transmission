@@ -846,10 +846,52 @@ uint8_t cc1101_addr(uint8_t reg, bool read, bool burst) {
 ```
 
 maybe explain the transmit function briefly and link it in the freq section
+make sure to explain autocal in one of these sections
 
 ## Configuring Signal Parameters
 ## Configuring Transmission Parameters
 ## Transmitting Data
+10.1 chip status byte
+The last four bits (3:0) in the status byte
+contains FIFO_BYTES_AVAILABLE. For read
+operations (the R/W¯ bit in the header byte is
+set to 1), the FIFO_BYTES_AVAILABLE field
+contains the number of bytes available for
+reading from the RX FIFO. For write
+operations (the R/W¯ bit in the header byte is
+set to 0), the FIFO_BYTES_AVAILABLE field
+contains the number of bytes that can be
+written to the TX FIFO. When
+FIFO_BYTES_AVAILABLE=15, 15 or more
+bytes are available/free
+
+```text
+I (1297) CC1101: Operation: GDO0 CONFIG | 0x0F 0x0F
+I (2297) CC1101: Operation: READ AUTOCAL | 0x00 0x14 
+I (2297) CC1101: Operation: READ FREQUENCY | 0x00 0x0C 0x1D 0x8A
+I (2297) CC1101: Operation: READ MOD FORMAT / SYNC MODE | 0x00 0x03 
+I (2297) CC1101: Operation: READ DEVIATION | 0x00 0x40
+I (2307) CC1101: Operation: READ DATA RATE | 0x00 0x89 0xF8 
+I (2307) CC1101: Operation: READ POWER | 0x00 0x51
+I (2317) CC1101: Operation: READ SYNC WORD | 0x00 0xD3 0x91 
+I (2317) CC1101: Operation: READ PREAMBLE | 0x00 0x22
+I (2327) CC1101: Operation: READ PKTCTRL0 | 0x00 0x00
+I (2327) CC1101: Operation: READ PKTLEN | 0x00 0x05 
+I (2337) CC1101: Operation: READ IOCFG0 | 0x00 0x02
+I (2337) CC1101: Operation: READ FIFOTHR | 0x00 0x0E 
+I (2347) CC1101: Operation: READ MCSM1 | 0x00 0x31
+I (2347) CC1101: Operation: READ MARCSTATE | 0x00 0x01 
+I (2347) CC1101: Operation: READ TXBYTES | 0x00 0x07
+I (2357) CC1101: GDO0 level: 1
+I (3357) CC1101: ======= AFTER 5 BYTES =======
+I (3357) CC1101: Operation: READ MARCSTATE | 0x30 0x12
+I (3357) CC1101: Operation: READ TXBYTES | 0x30 0x02 
+I (3357) CC1101: GDO0 level: 0
+I (4357) CC1101: ======= AFTER 10 BYTES =======
+I (4357) CC1101: Operation: READ MARCSTATE | 0x70 0x16
+I (4357) CC1101: Operation: READ TXBYTES | 0x70 0x80 
+I (4357) CC1101: GDO0 level: 0
+```
 ## Proving the Transmission Was Successful
 # 8. Datasheet and Theory Abstraction in Libraries
 Talk about doing this with just the ESP-IDF compared to doing it with arduino and [RadioLib](https://github.com/jgromes/RadioLib).

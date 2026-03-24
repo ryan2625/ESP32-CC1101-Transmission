@@ -48,6 +48,8 @@ constexpr uint8_t CC1101_VALUE_FIFOTHR    = 0xF8;
 constexpr uint8_t CC1101_VALUE_IOCFG0     = 0x02;
 constexpr uint8_t CC1101_VALUE_PATABLE    = 0x51;
 constexpr uint8_t CC1101_DUMMY_BYTE       = 0x00;
+constexpr uint8_t CC1101_VALUE_MCSM0      = 0x14; 
+constexpr uint8_t CC1101_CONFIG_MCSM0     = 0x18;
 
 uint8_t calculate__header_byte(uint8_t address, bool read, bool burst) {
     return address | (read ? 0x80 : 0x00) | (burst ? 0x40 : 0x00);
@@ -75,6 +77,15 @@ void log_reg_values(spi_device_handle_t cc1101) {
     transmit__data(
         cc1101,
         (uint8_t[]){
+            calculate__header_byte(CC1101_CONFIG_MCSM0, true, false),
+            CC1101_DUMMY_BYTE,
+        },
+        2,
+        "READ AUTOCAL"
+    );
+    transmit__data(
+        cc1101,
+        (uint8_t[]){
             calculate__header_byte(CC1101_CONFIG_FREQ2, true, true),
             CC1101_DUMMY_BYTE,
             CC1101_DUMMY_BYTE,
@@ -83,7 +94,6 @@ void log_reg_values(spi_device_handle_t cc1101) {
         4,
         "READ FREQUENCY"
     );
-
     transmit__data(
         cc1101,
         (uint8_t[]){
@@ -93,7 +103,6 @@ void log_reg_values(spi_device_handle_t cc1101) {
         2,
         "READ MOD FORMAT / SYNC MODE"
     );
-
     transmit__data(
         cc1101,
         (uint8_t[]){
@@ -103,7 +112,6 @@ void log_reg_values(spi_device_handle_t cc1101) {
         2,
         "READ DEVIATION"
     );
-
     transmit__data(
         cc1101,
         (uint8_t[]){
@@ -114,7 +122,6 @@ void log_reg_values(spi_device_handle_t cc1101) {
         3,
         "READ DATA RATE"
     );
-
     transmit__data(
         cc1101,
         (uint8_t[]){
@@ -124,7 +131,6 @@ void log_reg_values(spi_device_handle_t cc1101) {
         2,
         "READ POWER"
     );
-
     transmit__data(
         cc1101,
         (uint8_t[]){
@@ -135,7 +141,6 @@ void log_reg_values(spi_device_handle_t cc1101) {
         3,
         "READ SYNC WORD"
     );
-
     transmit__data(
         cc1101,
         (uint8_t[]){
@@ -145,7 +150,6 @@ void log_reg_values(spi_device_handle_t cc1101) {
         2,
         "READ PREAMBLE"
     );
-
     transmit__data(
         cc1101,
         (uint8_t[]){
@@ -155,7 +159,6 @@ void log_reg_values(spi_device_handle_t cc1101) {
         2,
         "READ PKTCTRL0"
     );
-
     transmit__data(
         cc1101,
         (uint8_t[]){
@@ -165,7 +168,6 @@ void log_reg_values(spi_device_handle_t cc1101) {
         2,
         "READ PKTLEN"
     );
-
     transmit__data(
         cc1101,
         (uint8_t[]){
@@ -175,7 +177,6 @@ void log_reg_values(spi_device_handle_t cc1101) {
         2,
         "READ IOCFG0"
     );
-
     transmit__data(
         cc1101,
         (uint8_t[]){
@@ -185,7 +186,6 @@ void log_reg_values(spi_device_handle_t cc1101) {
         2,
         "READ FIFOTHR"
     );
-
     transmit__data(
         cc1101,
         (uint8_t[]){
@@ -195,7 +195,31 @@ void log_reg_values(spi_device_handle_t cc1101) {
         2,
         "READ MCSM1"
     );
+    transmit__data(
+        cc1101,
+        (uint8_t[]){
+            calculate__header_byte(CC1101_STATUS_MARCSTATE, true, true),
+            CC1101_DUMMY_BYTE
+        },
+        2,
+        "READ MARCSTATE"
+    );
+    transmit__data(
+        cc1101,
+        (uint8_t[]){
+            calculate__header_byte(CC1101_STATUS_TXBYTES, true, true),
+            CC1101_DUMMY_BYTE
+        },
+        2,
+        "READ TXBYTES"
+    );
+    ESP_LOGI("CC1101", "GDO0 level: %d", gpio_get_level(GPIO_NUM_4));
+}
 
+
+
+void log_after_tx(spi_device_handle_t cc1101, int bytes) {
+    ESP_LOGI("CC1101", "======= AFTER %d BYTES =======", bytes);
     transmit__data(
         cc1101,
         (uint8_t[]){
@@ -215,4 +239,5 @@ void log_reg_values(spi_device_handle_t cc1101) {
         2,
         "READ TXBYTES"
     );
+    ESP_LOGI("CC1101", "GDO0 level: %d", gpio_get_level(GPIO_NUM_4));
 }
