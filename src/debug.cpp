@@ -140,7 +140,7 @@ void log_reg_values(spi_device_handle_t cc1101) {
             CC1101_DUMMY_BYTE
         },
         3,
-        "READ SYNC WORD"
+        "READ SYNC1 SYNC2"
     );
     transmit__data(
         cc1101,

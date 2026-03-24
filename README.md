@@ -64,8 +64,9 @@ This README will heavily reference the official **[TI CC1101 transceiver datashe
 7. [Sending Data in C++](#7-sending-data-in-c)
    - [Configuring the SPI Bus](#configuring-the-spi-bus)  
    - [Helper Functions](#helper-functions)
-   - [Configuring Signal Parameters](#configuring-signal-parameters)
-   - [Configuring Transmission Parameters](#configuring-Transmission-parameters)
+      - [`spi_transaction`](#spi_transaction)
+      - [`calculate_header_byte`](#calculate_header_byte)
+   - [Configuring Registers](#configuring-registers)
    - [Transmitting Data](#transmitting-data)  
    - [Proving the Transmission Was Successful](#proving-the-transmission-was-successful)
 
@@ -406,9 +407,9 @@ And rearrange the equation to solve for the frequency:
 </div>
 <br>
 
-The result is *FREQ* ≈ 793,994.
+The result is *FREQ* ≈ `793,994`.
 
-The hard part of calculating the frequency is complete. Now all we have to do is store the value of *FREQ* across the three registers `FREQ2`, `FREQ1`, and `FREQ0`. 793,994 in hexadecimal is `0x0C1D8A`. The reason we use three registers instead of one is, of course, the *FREQ* value is too large to store in a 1-byte register. We will send `0x0C` to `FREQ2`, `0x1D` to `FREQ1`, and `0x8A` to `FREQ0`. The frequency registers are shown below.
+The hard part of calculating the frequency is complete. Now all we have to do is store the value of *FREQ* across the three registers `FREQ2`, `FREQ1`, and `FREQ0`. `793,994` in hexadecimal is `0x0C1D8A`. The reason we use three registers instead of one is, of course, the *FREQ* value is too large to store in a 1-byte register. We will send `0x0C` to `FREQ2`, `0x1D` to `FREQ1`, and `0x8A` to `FREQ0`. The frequency registers are shown below.
 
 <br>
 <div align="center">
@@ -422,14 +423,14 @@ Page 75: Frequency Registers
 >Note: The upper two bits of `FREQ2` are always set to 0 (not used). This is because the CC1101 is a sub-1 GHz transceiver. If we could hypothetically use all 24 bits and substitute that value into the carrier frequency equation, it might push the calculated frequency into the GHz range. This would be beyond the hardware capabilities of the CC1101.
 
 ### Setting the Frequency in C++
-Most of the coding examples will be shown in the [Sending Data in C++](#7-sending-data-in-c) section of this guide. With that said, it will be helpful to see the implementation of setting at least one parameter for right now. We will use the value we calculated earlier of FREQ ≈ 793,994 that corresponds to setting the frequency to 315 MHz. 
+More coding examples will be shown in the [Sending Data in C++](#7-sending-data-in-c) section of this guide. For now, we will walk through a single example of setting the carrier frequency. We will use the value we calculated earlier, FREQ ≈ `793,994`, that corresponds to setting the frequency to 315 MHz. Remember that communication with the CC1101 starts with a header (or transaction) byte [following this format](https://github.com/ryan2625/ESP32-CC1101?tab=readme-ov-file#expected-transaction-format) outlined in my first guide.
 
-- Communication with the CC1101 starts with a header (or transaction) byte [following this format](https://github.com/ryan2625/ESP32-CC1101?tab=readme-ov-file#expected-transaction-format) outlined in my first guide.
+- Construct the header byte:
     - Set bit position 7 of the byte to `0` to use write mode.
     - Set bit position 6 to `1` to denote burst access. This will let us write to all three frequency registers in one transaction.
     - Set bit positions 5–0 to `001101` for the FREQ2 register address. Since the address field is 6 bits wide, the original value of `1101` (`0x0D`) is padded with leading zeros.
     - The entire header byte is `01001101`, or `0x4D`
-- Convert 793,994 to hex which is `0x0C1D8A`, and split this into three bytes.
+- Convert `793,994` to hex which is `0x0C1D8A`, and split this into three bytes.
 - Send the header byte, followed by the three bytes representing the FREQ value
 
 >Note: When setting the burst bit to `1` in write mode, data is written sequentially to consecutive registers with increasing address values; we only need to specify the address of the first register for burst access. Refer to the register addresses listed below. <div align="center"><img src="Assets/Frequency_Reg.png" width="100%"></div> 
@@ -444,7 +445,7 @@ extern "C" void app_main(void) {
     // FREQ2 -> FREQ1 -> FREQ0
     // 0x0C goes to FREQ2, 0x1D to FREQ1, and 0x8A to FREQ0
 
-    transmit_data(
+    spi_transaction(
         cc1101, // Device handle
         (uint8_t[]){0x4D, 0x0C, 0x1D, 0x8A}, // Bytes to transmit
         4, // How many bytes we are transmitting
@@ -452,7 +453,7 @@ extern "C" void app_main(void) {
     );
 }
 ```
-Where [`transmit_data`](https://github.com/ryan2625/CC1101-TX/blob/main/src/main.cpp) is a helper function defined in `main.cpp`. 
+Where [`spi_transaction`](https://github.com/ryan2625/CC1101-TX/blob/main/src/main.cpp) is a helper function defined in `main.cpp`. 
 
 
 # 3. Modulation
@@ -609,9 +610,9 @@ Preamble bits (or bytes) are a sequence of alternating bits sent at the start of
 In the CC1101, the amount of preamble bytes sent is configured in the `MDMCFG1.NUM_PREAMBLE` field at `0x13`. The datasheet recommends using a 4-byte preamble (32 bits). When the radio enters `TX` mode, it will keep transmitting the preamble bytes you configured infinitely until a byte is written to the TX FIFO. 
 
 ### Synchronization Word
-The Synchronization word's primary purpose is to mark the exact start of valid data in a signal. It can also help with network filtering, where a receiver can look at the sync word of a signal and ignore signals that do not match the expected sync word. More information on the sync word can be found in section **14.3: Byte Synchronization**.
+The Synchronization word's primary purpose is to mark the exact start of valid data in a signal. It can also help with network filtering, where a receiver can check the sync word of a signal and ignore signals that do not match the expected sync word. More information on the sync word can be found in section **14.3: Byte Synchronization**. The sync word value itself is arbitrary, but the receiver and the transmitter must match each other if it is used.
 
-The CC1101 recommends implementing a 4-byte sync word, stored in the `SYNC1` at `0x04` and `SYNC0` at `0x05` registers. To reach the recommended 4 bytes in a sync word, we will have to send the `MDMCFG2.SYNC_MODE` field either a 3 (`011`) or a 7 (`111`). This will duplicate the 2 bytes we have stored in `SYNC1` and `SYNC0` and send 4 bytes in total when we transmit data.
+The CC1101 recommends implementing a 4-byte sync word, stored in the `SYNC1` at `0x04` and `SYNC0` at `0x05` registers. To reach the recommended 4 bytes in a sync word, we will have to send the `MDMCFG2.SYNC_MODE` field either a 3 (`011`) or a 7 (`111`). This will duplicate the 2 bytes we have stored in `SYNC1` and `SYNC0` and send 4 bytes in total when we transmit data. 
 
 <div align='center'>
 
@@ -830,26 +831,93 @@ extern "C" void app_main(void) {
 
 # 7. Sending Data in C++
 ## Configuring the SPI Bus
-## Helper functions 
-<div align='center'>
+To transmit a signal, the first thing our program must do is configure the SPI bus. Configuring the SPI bus takes two separate methods [`spi_bus_initialize`](https://github.com/ryan2625/ESP32-CC1101?tab=readme-ov-file#method-spi_bus_initialize) and [`spi_bus_add_device`](https://github.com/ryan2625/ESP32-CC1101?tab=readme-ov-file#method-spi_bus_add_device) from the ESP-IDF API documentation. These methods were reviewed in depth in my first guide, so please refer back to those explanations if you want to know more. 
+## Helper functions
 
-<img src="Assets/bit_shift.png" width="70%">
- 
-Table 45: SPI Address Space Header Formula
+### `spi_transaction`
 
-</div> 
+There are two important helper functions inside `main.cpp` that make accessing registers easier. The first function, `spi_transaction`, simplifies SPI transactions. To perform a transaction, we simply pass in the device handle, an array of bytes to send, and the length of that array. This function is similar to the `transmit_data` function from the first guide.
+
+```cpp
+void spi_transaction(spi_device_handle_t cc1101, const uint8_t* data, size_t len) {
+    spi_transaction_t t = {};
+    uint8_t rx[len];
+    t.tx_buffer = data;
+    t.rx_buffer = rx;
+    t.length = len * 8;
+    ESP_ERROR_CHECK(spi_device_polling_transmit(cc1101, &t));
+}
+```
+### Notes
+
+- The `tx_buffer` is filled with the data we send, and the `rx_buffer` is filled with the response from the CC1101 which we can read off after the transaction.
+- [`spi_device_polling_transmit`](https://docs.espressif.com/projects/esp-idf/en/stable/esp32/api-reference/peripherals/spi_master.html#_CPPv427spi_device_polling_transmit19spi_device_handle_tP17spi_transaction_t) is the function from the ESP-IDF API that performs the actual SPI transaction.
+- `rx_buffer[0]` will always be the chip status byte.
+- `tx_buffer[0]` will be the header byte or the byte to send a command strobe
+
+### `calculate_header_byte`
+
+As previously mentioned, the header byte in an SPI transaction consists of a R/W bit, a burst bit, and a 6-bit address. If you are writing to a register without burst access (R/W bit = `0`, burst bit = `0`), the header byte will be the exact same as the register address.
+
+If you are reading, using burst access, or both, the header byte changes by a fixed amount. We can use the [bitwise `OR` operator on the register value](https://www.geeksforgeeks.org/dsa/bitwise-or-operator-in-programming/) to construct the final header byte to send.
+
+---
+
+Example: Suppose you want to write to the register `FREQ2`, which has the address `0x0F` (`1111` in binary).
+
+### First, pad the address to a full byte
 
 ```
-uint8_t cc1101_addr(uint8_t reg, bool read, bool burst) {
+0000 1111
+```
+
+### Set the R/W bit (bit 7) and pad with 0's
+
+For a read operation, the R/W bit is `1`, which corresponds to:
+
+```
+1000 0000
+```
+
+### Combine using bitwise OR
+
+```
+0000 1111
+1000 0000
+---------
+1000 1111
+```
+
+So, the final header byte we send becomes:
+
+```
+0x8F
+```
+
+### Implementation
+
+```cpp
+uint8_t calculate_header_byte(uint8_t reg, bool read, bool burst) {
     return reg | (read ? 0x80 : 0x00) | (burst ? 0x40 : 0x00);
 }
 ```
 
-maybe explain the transmit function briefly and link it in the freq section
-make sure to explain autocal in one of these sections
+
+Where `|` is the C++ bitwise `OR` operator. This approach lets you store register addresses as constants and dynamically modify them depending on whether you are performing a read, write, or burst operation.
 
 ## Configuring Signal Parameters
-## Configuring Transmission Parameters
+Configuring the registers is a very repetitive task. See the section [Setting the Frequency in C++](#setting-the-frequency-in-c) for an example of what this looks like. One thing to note about configuring parameters in our program is that we are storing our register addresses in constants such as:
+
+```cpp 
+constexpr uint8_t CC1101_CONFIG_FREQ2 = 0x0D;
+```
+
+These constants are used to construct the final header byte with the `calculate_header_byte` function based on the burst and R/W bits. For registers that are accessed in burst mode, we only define the first register in the transaction. Burst mode automatically increments the register address during the transaction, so we don't need to explicitly define the subsequent registers. The following registers are used but not explicitly defined as constants:
+- `FREQ1` and `FREQ0`, which come after `FREQ2`
+- `SYNC0`, which comes after `SYNC1`
+
+That is why you won't find a register specificed like `CC1101_CONFIG_SYNC0` in the code (as it is accessed automatically through burst mode), but you will find `CC1101_VALUE_SYNC0` because we still need to know what values to send to these addresses.
+
 ## Transmitting Data
 10.1 chip status byte
 The last four bits (3:0) in the status byte
