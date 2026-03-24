@@ -922,7 +922,9 @@ These constants are used to construct the final header byte with the `calculate_
 - `FREQ1` and `FREQ0`, which come after `FREQ2`
 - `SYNC0`, which comes after `SYNC1`
 
-That is why you won't find a register specificed like `CC1101_CONFIG_SYNC0` in the code (as it is accessed automatically through burst mode), but you will find `CC1101_VALUE_SYNC0` because we still need to know what values to send to these addresses.
+That is why you won't find a register specificed like `CC1101_CONFIG_SYNC0` in the code (as it is accessed automatically through burst mode), but you will find `CC1101_VALUE_SYNC0` because we still need to know what values to send to these addresses. 
+
+Every single constant for register values defined in `main.cpp` has a comment explaining what the value means.
 
 ## Running the Program
 At this point, we have:
@@ -966,6 +968,8 @@ I (4367) CC1101: GDO0 level: 0
 I (4367) main_task: Returned from app_main()
 ```
 
+---
+
 The first relevant log associated with an SPI transaction is:
 ```
 I (1297) CC1101: Operation: GDO0 CONFIG | 0x0F 0x0F
@@ -986,7 +990,9 @@ The bytes logged after the first in a write transaction can be ignored.
 Page 31: Chip Status Byte Format
 </div>
 
-The next part of the log is reading back all of our register values that we just configured and after loading 7 bytes into the TX FIFO. I've attatched notes to some of the logs below
+---
+
+The next part of the log is reading back all of the register values we just configured, and after loading 7 bytes into the TX FIFO. I've attached comments to some of the logs below...
 ```text
 I (2297) CC1101: ========== ALL CONFIG VALUES ==========
 I (2297) CC1101: Operation: READ AUTOCAL | 0x00 0x14
@@ -1023,7 +1029,12 @@ I (2357) CC1101: Operation: READ TXBYTES | 0x00 0x07
 // Our GDO0 pin reads high, telling us we have more than 5 bytes in our TX FIFO
 I (2357) CC1101: GDO0 level: 1
 ```
-Now, we will put our radio into `TX` mode which will automatically start sending preamble bits, sync word, and then our 5 byte packet. Assuming there are no errors, `TXOFF_MODE` will put our radio into `FSTXON` state via the `FSTXON` strobe. 
+
+All of the values logged above correspond to the values we came up with in the previous sections of this guide.
+
+---
+
+Now, we will put our radio into `TX` mode which will automatically start sending preamble bits, the sync word, and a 5 byte packet.
 
 After our radio finishes its transmission, we see the following logged to the console:
 ```text
@@ -1032,7 +1043,21 @@ I (3367) CC1101: Operation: READ MARCSTATE | 0x30 0x12
 I (3367) CC1101: Operation: READ TXBYTES | 0x30 0x02 
 I (3367) CC1101: GDO0 level: 0
 ```
-As expected, our `MARCSTATE` register lets us know we are in the `FSXTON` state (corresponding to `0x12`). We also see from the `TXBYTES` register that we have exactly 2 (`0x02`) bytes in our TX FIFO.
+`TXOFF_MODE` will put our radio into `FSTXON` state upon a successful transmission completion. As expected, our `MARCSTATE` register lets us know we are in the `FSXTON` state (corresponding to `0x12`). We also see from the `TXBYTES` register that we have exactly 2 (`0x02`) bytes in our TX FIFO. 
+
+Since we only have 2 bytes left and our TX FIFO threshold is 5, Our `GDO0` pin is now reading low.
+
+---
+
+The last thing we do is put our radio back into `TX` mode which will send another 5 packets. 
+```text
+I (4367) CC1101: ============ AFTER 10 BYTES ===========
+I (4367) CC1101: Operation: READ MARCSTATE | 0x70 0x16
+I (4367) CC1101: Operation: READ TXBYTES | 0x70 0x80 
+I (4367) CC1101: GDO0 level: 0
+```
+
+Since we only have 2 bytes in our TX FIFO, this means the radio will enter the `TXFIFO_UNDERFLOW` state. We can confirm this since the chip status byte value is `0x70` and the `TXBYTES` register is `0x80`.
 
 ## Proving the Transmission Was Successful
 # 8. Datasheet and Theory Abstraction in Libraries
