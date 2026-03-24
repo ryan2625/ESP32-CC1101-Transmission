@@ -67,7 +67,7 @@ This README will heavily reference the official **[TI CC1101 transceiver datashe
       - [`spi_transaction`](#spi_transaction)
       - [`calculate_header_byte`](#calculate_header_byte)
    - [Configuring Registers](#configuring-registers)
-   - [Transmitting Data](#transmitting-data)  
+   - [Running the Program](#running-the-program)  
    - [Proving the Transmission Was Successful](#proving-the-transmission-was-successful)
 
 8. [Datasheet and Theory Abstraction in Libraries](#8-datasheet-and-theory-abstraction-in-libraries)
@@ -87,7 +87,7 @@ Visual Representation of AM and FM
 </div>
 
 ## Register Values
-A 'register' inside of the CC1101 is essentially an addressable location that contains a byte of data relating to configuration settings, status information, or command strobes. Some registers are dedicated to containing only a single field. One example of this is the `RSSI` register, which uses all 8 bits to hold the signal strength information. 
+A 'register' inside of the CC1101 is essentially an addressable location that contains a byte of data relating to [configuration settings, status information, or command strobes](https://github.com/ryan2625/ESP32-CC1101?tab=readme-ov-file#spi-accessible-types). Some registers are dedicated to containing only a single field. One example of this is the `RSSI` register, which uses all 8 bits to hold the signal strength information. 
 
 Alternatively, some registers have unused bits or may contain multiple fields. In these cases, since multiple fields share the same register, **we must modify only the relevant bits while leaving the others unchanged**. 
 
@@ -833,7 +833,7 @@ extern "C" void app_main(void) {
 
 # 7. Sending Data in C++
 ## Configuring the SPI Bus
-To transmit a signal, the first thing our program must do is configure the SPI bus. Configuring the SPI bus takes two separate methods [`spi_bus_initialize`](https://github.com/ryan2625/ESP32-CC1101?tab=readme-ov-file#method-spi_bus_initialize) and [`spi_bus_add_device`](https://github.com/ryan2625/ESP32-CC1101?tab=readme-ov-file#method-spi_bus_add_device) from the ESP-IDF API documentation. These methods were reviewed in depth in my first guide, so please refer back to those explanations if you want to know more. 
+To transmit a signal, the first thing our program must do is configure the SPI bus. Configuring the SPI bus takes two separate methods [`spi_bus_initialize()`](https://github.com/ryan2625/ESP32-CC1101?tab=readme-ov-file#method-spi_bus_initialize) and [`spi_bus_add_device()`](https://github.com/ryan2625/ESP32-CC1101?tab=readme-ov-file#method-spi_bus_add_device) from the ESP-IDF API documentation. These methods were reviewed in depth in my first guide, so please refer back to those explanations if you want to know more. 
 ## Helper functions
 
 ### `spi_transaction`
@@ -858,6 +858,7 @@ void spi_transaction(spi_device_handle_t cc1101, const uint8_t* data, size_t len
 - `tx_buffer[0]` will be the header byte or the byte used to send a command strobe
 
 ### `calculate_header_byte`
+The second function helps `calculate_header_byte` us calculate the header byte based off of how we want to interact with a register.
 
 As previously mentioned, the header byte in an SPI transaction consists of a R/W bit, a burst bit, and a 6-bit address. If you are writing to a register without burst access (R/W bit = `0`, burst bit = `0`), the header byte will be the exact same as the register address.
 
@@ -918,21 +919,16 @@ These constants are used to construct the final header byte with the `calculate_
 
 That is why you won't find a register specificed like `CC1101_CONFIG_SYNC0` in the code (as it is accessed automatically through burst mode), but you will find `CC1101_VALUE_SYNC0` because we still need to know what values to send to these addresses.
 
-## Transmitting Data
-10.1 chip status byte
-The last four bits (3:0) in the status byte
-contains FIFO_BYTES_AVAILABLE. For read
-operations (the R/W¯ bit in the header byte is
-set to 1), the FIFO_BYTES_AVAILABLE field
-contains the number of bytes available for
-reading from the RX FIFO. For write
-operations (the R/W¯ bit in the header byte is
-set to 0), the FIFO_BYTES_AVAILABLE field
-contains the number of bytes that can be
-written to the TX FIFO. When
-FIFO_BYTES_AVAILABLE=15, 15 or more
-bytes are available/free
+## Running the Program
+At this point, we have:
+- Identified the registers required to transmit a signal
+- Calculated the values required for a 315 MHz 2-FSK signal
+- Learned the radio’s operating states and when to use command strobes
+- Created helper functions in C++ to interact with the CC1101
 
+The final step is to examine the program I've created in `main.cpp` and analyze its output. Just like we have discussed, we will see the constants defined at the top, followed by the helper functions, followed by our `app_main` function which contains SPI bus configuration and setting up & transmitting a signal.
+
+It is encouraged to skim the program and connect the ideas we have discussed this far in the guide. When we run the program, we get the following output: 
 ```text
 I (297) main_task: Calling app_main()
 I (1297) MAIN: Hello World...?
@@ -964,6 +960,20 @@ I (4367) CC1101: Operation: READ TXBYTES | 0x70 0x80
 I (4367) CC1101: GDO0 level: 0
 I (4367) main_task: Returned from app_main()
 ```
+
+10.1 chip status byte
+The last four bits (3:0) in the status byte
+contains FIFO_BYTES_AVAILABLE. For read
+operations (the R/W¯ bit in the header byte is
+set to 1), the FIFO_BYTES_AVAILABLE field
+contains the number of bytes available for
+reading from the RX FIFO. For write
+operations (the R/W¯ bit in the header byte is
+set to 0), the FIFO_BYTES_AVAILABLE field
+contains the number of bytes that can be
+written to the TX FIFO. When
+FIFO_BYTES_AVAILABLE=15, 15 or more
+bytes are available/free
 ## Proving the Transmission Was Successful
 # 8. Datasheet and Theory Abstraction in Libraries
 Talk about doing this with just the ESP-IDF compared to doing it with arduino and [RadioLib](https://github.com/jgromes/RadioLib).

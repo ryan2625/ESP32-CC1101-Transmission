@@ -6,7 +6,7 @@
  * A program for transmitting a 315 MHz signal with the CC1101.
  * 
  ******************************************************************************/
-
+// Imports for ESP-IDF API, standard C++, and CC1101 interaction
 #include "esp_log.h"
 #include <cstdint>
 #include <string>
@@ -87,7 +87,7 @@ void spi_transaction(spi_device_handle_t cc1101, const uint8_t* data, size_t len
     t.rx_buffer = rx; // rx[0] will always be the Chip Status Byte (section 10.1 of the datasheet)
     t.length = len * 8;
     ESP_ERROR_CHECK(spi_device_polling_transmit(cc1101, &t));
-
+    // Logging functionality to print our result if shouldLog is true
     if (shouldLog) {
         char buffer[256] = {0};
         int offset = 0;
@@ -324,10 +324,10 @@ extern "C" void app_main(void)
     // ==================== END CONFIGURE FIFO SECTION ====================== //
 
     // ======================= TRANSMISSION SECTION ========================= //
-    vTaskDelay(pdMS_TO_TICKS(1000));
+    vTaskDelay(pdMS_TO_TICKS(1000)); // Short delay to ensure register values are up to date
     log_reg_values(cc1101); // Logs all values we just entered for debugging purposes
 
-    // ENTER TX MODE, AUTOMATICALLY SEND PACKETS IN TX FIFO
+    // Radio enters TX mode, automatically sends data in the TX FIFO
     spi_transaction(
         cc1101,
         (uint8_t[]){
@@ -336,10 +336,11 @@ extern "C" void app_main(void)
         1,
         "TX MODE"
     );
+
     vTaskDelay(pdMS_TO_TICKS(1000));
     log_after_tx(cc1101, 5); // Logs TXBYTES and MARCSTATE 
 
-    // REENTER TX MODE
+    // PPut radio back in TX mode, automatically send remaining data in the TX FIFO
     spi_transaction(
         cc1101,
         (uint8_t[]){
