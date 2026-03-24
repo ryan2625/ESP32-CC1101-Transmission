@@ -116,6 +116,8 @@ To preserve all other default values while only updating the `FOC_PRE_K` field, 
 
 </div>
 
+>Note: An online [binary to hex calculator](https://www.rapidtables.com/convert/number/binary-to-hex.html) can be helpful for converting register values.
+
 ## Navigating the Datasheet
 The CC1101 datasheet is over 100 pages long and contains many diagrams, equations, and tables detailing various properties of the device. If you have never worked with a datasheet before, it can be difficult to know where to begin. To approach this, we will work backwards from our goal of transmitting a signal with the CC1101 and think about what properties we need to configure in order to achieve this. **Section 8: Configuration Overview** gives a holistic account of the radio's different functions and will be helpful in guiding our intuition. We can separate the datasheet sections into three different categories.
 
@@ -861,7 +863,7 @@ As previously mentioned, the header byte in an SPI transaction consists of a R/W
 
 If you are reading, using burst access, or both, the header byte changes by a fixed amount. We can use the [bitwise `OR` operator on the register value](https://www.geeksforgeeks.org/dsa/bitwise-or-operator-in-programming/) to construct the final header byte to send.
 
-Example: Suppose you want to write to the register `FREQ2`, which has the address `0x0F` (`1111` in binary).
+Let's look at one example: suppose you want to write to the register `FREQ2`, which has the address `0x0F` (`1111` in binary).
 
 ### First, pad the address to a full byte
 
