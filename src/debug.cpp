@@ -74,6 +74,7 @@ void transmit__data(spi_device_handle_t cc1101, const uint8_t* data, size_t len,
 };
 
 void log_reg_values(spi_device_handle_t cc1101) {
+    ESP_LOGI("CC1101", "========== ALL CONFIG VALUES ==========");
     transmit__data(
         cc1101,
         (uint8_t[]){
@@ -219,7 +220,7 @@ void log_reg_values(spi_device_handle_t cc1101) {
 
 
 void log_after_tx(spi_device_handle_t cc1101, int bytes) {
-    ESP_LOGI("CC1101", "======= AFTER %d BYTES =======", bytes);
+    ESP_LOGI("CC1101", "============ AFTER %d BYTES ============", bytes);
     transmit__data(
         cc1101,
         (uint8_t[]){
