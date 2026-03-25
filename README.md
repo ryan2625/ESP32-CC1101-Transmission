@@ -1048,7 +1048,7 @@ All of the values logged above correspond to the values we came up with in the p
 
 ---
 
-Now, we will put our radio into `TX` mode which will automatically start sending preamble bits, the sync word, and a 5 byte packet. Upon a successful transmission completion, we should see the `TXOFF_MODE` putting our radio into the `FSTXON` state.
+The next part of the logs is when we enter `TX` mode which will automatically start sending preamble bits, the sync word, and a 5 byte packet. Upon a successful transmission completion, we should see the `TXOFF_MODE` putting our radio into the `FSTXON` state.
 
 After our radio finishes its transmission, we see the following logged to the console:
 ```text
@@ -1063,7 +1063,7 @@ Since we only have 2 bytes left and our TX FIFO threshold is 5, Our `GDO0` pin i
 
 ---
 
-The last thing we do is put our radio back into `TX` mode which will send another 5 packets. 
+The last thing we do is put our radio back into `TX` mode which will send another 5 bytes. 
 ```text
 I (4367) CC1101: ============ AFTER 10 BYTES ===========
 I (4367) CC1101: Operation: READ MARCSTATE | 0x70 0x16
@@ -1071,7 +1071,7 @@ I (4367) CC1101: Operation: READ TXBYTES | 0x70 0x80
 I (4367) CC1101: GDO0 level: 0
 ```
 
-Since we only have 2 bytes in our TX FIFO, this means the radio will enter the `TXFIFO_UNDERFLOW` state. We can confirm this since the chip status byte value is `0x70` and the `TXBYTES` register value is `0x80`.
+Before attempting to send these 5 bytes, we only had 2 bytes in our TX FIFO. This means the radio will now enter the `TXFIFO_UNDERFLOW` state. We can confirm this since the chip status byte value is `0x70` and the `TXBYTES` register value is `0x80`.
 
 ## Proving the Transmission Was Successful
 
