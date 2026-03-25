@@ -1102,14 +1102,11 @@ The Arduino platform turns the SPI configuration code from the ESP-IDF:
     deviceConfig.spics_io_num = GPIO_NUM_5; 
     deviceConfig.queue_size = 1; 
     ESP_ERROR_CHECK(spi_bus_add_device(SPI3_HOST, &deviceConfig, &cc1101));
-
-    initialize_device(cc1101); 
 ```
 
 Into roughly the equivalent:
 ```cpp
     SPIClass radioSPI(VSPI);
-
     radioSPI.begin(18,  19, 23, 5);
 ```
 The code mapping of the two sections aren't exactly 1 to 1, but they essentially accomplish the same goal. 
@@ -1118,12 +1115,11 @@ The code mapping of the two sections aren't exactly 1 to 1, but they essentially
 
 - `radioSPI.begin(18,  19, 23, 5);` configures the pin mapping
 
-Setting up the clock speed, SPI mode, and other parameters is handled internally by the library and does not neeed to be explicitly set every time you are writing an arduino program.
+Setting up lower level SPI parameters such as clock speed and SPI mode are handled internally by the libraries, so they typically don't need to be explicitly set here.
 
 ---
 
-
-And RadioLib turns the register values, configuration steps, and transmission steps from our original ESP-IDF code:
+RadioLib turns the register values, configuration steps, and transmission steps from our original ESP-IDF code:
 ```cpp
 constexpr uint8_t CC1101_STROBE_SRES      = 0x30;
 constexpr uint8_t CC1101_STROBE_STX       = 0x35;
@@ -1177,6 +1173,7 @@ void spi_transaction(spi_device_handle_t cc1101, const uint8_t* data, size_t len
     t.length = len * 8;
     ESP_ERROR_CHECK(spi_device_polling_transmit(cc1101, &t));
 };
+
 void initialize_device(spi_device_handle_t cc1101) {
     spi_transaction(cc1101, (uint8_t[]){CC1101_STROBE_SRES}, 1, "SRES");
     spi_transaction(cc1101, (uint8_t[]){CC1101_STROBE_SIDLE}, 1, "SIDLE");
@@ -1186,6 +1183,7 @@ void initialize_device(spi_device_handle_t cc1101) {
 extern "C" void app_main(void)
 {
     ...
+    initialize_device(cc1101); 
     spi_transaction(cc1101, (uint8_t[]){calculate_header_byte(CC1101_CONFIG_MCSM0, false, false), CC1101_VALUE_MCSM0}, 2, "AUTOCAL");
     spi_transaction(cc1101, (uint8_t[]){calculate_header_byte(CC1101_CONFIG_FREQ2, false, true), CC1101_VALUE_FREQ2, CC1101_VALUE_FREQ1, CC1101_VALUE_FREQ0}, 4, "FREQUENCY");
     spi_transaction(cc1101, (uint8_t[]){calculate_header_byte(CC1101_CONFIG_MDMCFG2, false, false), CC1101_VALUE_MDMCFG2}, 2, "MOD FORMAT");
@@ -1208,6 +1206,7 @@ extern "C" void app_main(void)
 
 Into just this:
 ```cpp
+    CC1101 radio = new Module(5, 4, RADIOLIB_NC, RADIOLIB_NC, radioSPI);
     int state;
     state = radio.begin(315.0, 25.0, 25.0, 58.0, 0, 4);
     state = radio.setSyncWord(0xD3, 0x91);
