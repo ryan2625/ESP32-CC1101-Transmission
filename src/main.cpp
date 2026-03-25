@@ -64,7 +64,7 @@ constexpr uint8_t CC1101_VALUE_IOCFG0     = 0x02; // GDO0 Config: FIFO Threshold
 constexpr uint8_t CC1101_VALUE_FIFOTHR    = 0x0E; // TX Threshold: 5 Bytes
 constexpr uint8_t CC1101_VALUE_MCSM1      = 0x31; // TXOFF Mode: FSTXON
 constexpr uint8_t CC1101_VALUE_MCSM0      = 0x14; // FS_AUTOCAL: Calibrate when IDLE -> TX
-constexpr uint8_t CC1101_DUMMY_BYTE       = 0x00;
+constexpr uint8_t CC1101_DUMMY_BYTE       = 0x00; // Byte used to clock data on reads
 // =========================================== //
 
 uint8_t calculate_header_byte(uint8_t address, bool read, bool burst) {

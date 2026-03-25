@@ -1076,8 +1076,147 @@ Before attempting to send these 5 bytes, we only had 2 bytes in our TX FIFO. Thi
 ## Proving the Transmission Was Successful
 
 # 8. Datasheet and Theory Abstraction in Libraries
-Talk about doing this with just the ESP-IDF compared to doing it with arduino and [RadioLib](https://github.com/jgromes/RadioLib).
+Transmitting a CC1101 signal with just the ESP-IDF framework necessitates a deep understanding of the datasheet as well as far more manual setup. Accomplishing the same goal with a framework requires minimal effort and little understanding of the theory. 
 
+One framework that can help us set everything up faster is the [Arduino platform](https://docs.platformio.org/en/latest/frameworks/arduino.html) that gives us access to all of the ESP32 APIs. This, combined with a library specifically designed to communicate with the CC1101 such as [RadioLib](https://github.com/jgromes/RadioLib) allows for the two devices to be used together without ever having to read the datasheet.
+
+---
+
+The Arduino platform turns the SPI configuration code from the ESP-IDF:
+```cpp
+    spi_bus_config_t busConfig = {};
+    busConfig.mosi_io_num = GPIO_NUM_23;
+    busConfig.miso_io_num = GPIO_NUM_19;
+    busConfig.sclk_io_num = GPIO_NUM_18;
+    busConfig.quadwp_io_num = -1; 
+    busConfig.quadhd_io_num = -1;
+    ESP_ERROR_CHECK(spi_bus_initialize(SPI3_HOST, &busConfig, SPI_DMA_DISABLED));
+
+    spi_device_interface_config_t deviceConfig = {};
+    spi_device_handle_t cc1101; 
+    deviceConfig.command_bits = 0; 
+    deviceConfig.address_bits = 0;
+    deviceConfig.dummy_bits = 0;
+    deviceConfig.mode = 0;
+    deviceConfig.clock_speed_hz = 1000000; 
+    deviceConfig.spics_io_num = GPIO_NUM_5; 
+    deviceConfig.queue_size = 1; 
+    ESP_ERROR_CHECK(spi_bus_add_device(SPI3_HOST, &deviceConfig, &cc1101));
+
+    initialize_device(cc1101); 
+```
+
+Into roughly the equivalent:
+```cpp
+    SPIClass radioSPI(VSPI);
+
+    radioSPI.begin(18,  19, 23, 5);
+```
+The code mapping of the two sections aren't exactly 1 to 1, but they essentially accomplish the same goal. 
+
+- `SPIClass radioSPI(VSPI);` selects the SPI host to use
+
+- `radioSPI.begin(18,  19, 23, 5);` configures the pin mapping
+
+Setting up the clock speed, SPI mode, and other parameters is handled internally by the library and does not neeed to be explicitly set every time you are writing an arduino program.
+
+---
+
+
+And RadioLib turns the register values, configuration steps, and transmission steps from our original ESP-IDF code:
+```cpp
+constexpr uint8_t CC1101_STROBE_SRES      = 0x30;
+constexpr uint8_t CC1101_STROBE_STX       = 0x35;
+constexpr uint8_t CC1101_STROBE_SIDLE     = 0x36;
+constexpr uint8_t CC1101_STROBE_SFTX      = 0x3B;
+constexpr uint8_t CC1101_CONFIG_FREQ2     = 0x0D;
+constexpr uint8_t CC1101_CONFIG_MDMCFG2   = 0x12; 
+constexpr uint8_t CC1101_CONFIG_DEVIATN   = 0x15; 
+constexpr uint8_t CC1101_CONFIG_MDMCFG4   = 0x10; 
+constexpr uint8_t CC1101_CONFIG_MDMCFG3   = 0x11; 
+constexpr uint8_t CC1101_CONFIG_PATABLE   = 0x3E;
+constexpr uint8_t CC1101_CONFIG_SYNC1     = 0x04;
+constexpr uint8_t CC1101_CONFIG_MDMCFG1   = 0x13; 
+constexpr uint8_t CC1101_CONFIG_PKTCTRL0  = 0x08; 
+constexpr uint8_t CC1101_CONFIG_PKTLEN    = 0x06;
+constexpr uint8_t CC1101_CONFIG_IOCFG0    = 0x02; 
+constexpr uint8_t CC1101_CONFIG_FIFOTHR   = 0x03; 
+constexpr uint8_t CC1101_CONFIG_MCSM1     = 0x17; 
+constexpr uint8_t CC1101_CONFIG_MCSM0     = 0x18;
+constexpr uint8_t CC1101_STATUS_TXBYTES   = 0x3A;
+constexpr uint8_t CC1101_STATUS_MARCSTATE = 0x35;
+constexpr uint8_t CC1101_REG_FIFO         = 0x3F;
+constexpr uint8_t CC1101_VALUE_FREQ2      = 0x0C; 
+constexpr uint8_t CC1101_VALUE_FREQ1      = 0x1D; 
+constexpr uint8_t CC1101_VALUE_FREQ0      = 0x8A; 
+constexpr uint8_t CC1101_VALUE_MDMCFG2    = 0x03; 
+constexpr uint8_t CC1101_VALUE_DEVIATN    = 0x40; 
+constexpr uint8_t CC1101_VALUE_MDMCFG4    = 0x89; 
+constexpr uint8_t CC1101_VALUE_MDMCFG3    = 0xF8; 
+constexpr uint8_t CC1101_VALUE_PATABLE    = 0x51; 
+constexpr uint8_t CC1101_VALUE_SYNC1      = 0xD3; 
+constexpr uint8_t CC1101_VALUE_SYNC0      = 0x91; 
+constexpr uint8_t CC1101_VALUE_MDMCFG1    = 0x22; 
+constexpr uint8_t CC1101_VALUE_PKTCTRL0   = 0x00; 
+constexpr uint8_t CC1101_VALUE_PKTLEN     = 0x05; 
+constexpr uint8_t CC1101_VALUE_IOCFG0     = 0x02;
+constexpr uint8_t CC1101_VALUE_FIFOTHR    = 0x0E;
+constexpr uint8_t CC1101_VALUE_MCSM1      = 0x31; 
+constexpr uint8_t CC1101_VALUE_MCSM0      = 0x14; 
+constexpr uint8_t CC1101_DUMMY_BYTE       = 0x00;
+
+uint8_t calculate_header_byte(uint8_t address, bool read, bool burst) {
+    return address | (read ? 0x80 : 0x00) | (burst ? 0x40 : 0x00);
+}
+
+void spi_transaction(spi_device_handle_t cc1101, const uint8_t* data, size_t len,  const std::string& operation) {
+    spi_transaction_t t = {};
+    uint8_t rx[len];
+    t.tx_buffer = data;
+    t.rx_buffer = rx;
+    t.length = len * 8;
+    ESP_ERROR_CHECK(spi_device_polling_transmit(cc1101, &t));
+};
+void initialize_device(spi_device_handle_t cc1101) {
+    spi_transaction(cc1101, (uint8_t[]){CC1101_STROBE_SRES}, 1, "SRES");
+    spi_transaction(cc1101, (uint8_t[]){CC1101_STROBE_SIDLE}, 1, "SIDLE");
+    spi_transaction(cc1101, (uint8_t[]){CC1101_STROBE_SFTX}, 1, "SFTX");
+};
+
+extern "C" void app_main(void)
+{
+    ...
+    spi_transaction(cc1101, (uint8_t[]){calculate_header_byte(CC1101_CONFIG_MCSM0, false, false), CC1101_VALUE_MCSM0}, 2, "AUTOCAL");
+    spi_transaction(cc1101, (uint8_t[]){calculate_header_byte(CC1101_CONFIG_FREQ2, false, true), CC1101_VALUE_FREQ2, CC1101_VALUE_FREQ1, CC1101_VALUE_FREQ0}, 4, "FREQUENCY");
+    spi_transaction(cc1101, (uint8_t[]){calculate_header_byte(CC1101_CONFIG_MDMCFG2, false, false), CC1101_VALUE_MDMCFG2}, 2, "MOD FORMAT");
+    spi_transaction(cc1101, (uint8_t[]){calculate_header_byte(CC1101_CONFIG_DEVIATN, false, false), CC1101_VALUE_DEVIATN}, 2, "MOD DEVIATION");
+    spi_transaction(cc1101, (uint8_t[]){calculate_header_byte(CC1101_CONFIG_MDMCFG4, false, true), CC1101_VALUE_MDMCFG4, CC1101_VALUE_MDMCFG3}, 3, "DATA RATE");
+    spi_transaction(cc1101, (uint8_t[]){calculate_header_byte(CC1101_CONFIG_PATABLE, false, false), CC1101_VALUE_PATABLE}, 2, "POWER");
+    spi_transaction(cc1101, (uint8_t[]){calculate_header_byte(CC1101_CONFIG_SYNC1, false, true), CC1101_VALUE_SYNC1, CC1101_VALUE_SYNC0}, 3, "SYNC WORD");
+    spi_transaction(cc1101, (uint8_t[]){calculate_header_byte(CC1101_CONFIG_MDMCFG1, false, false), CC1101_VALUE_MDMCFG1}, 2, "PREAMBLE");
+    spi_transaction(cc1101, (uint8_t[]){calculate_header_byte(CC1101_CONFIG_MDMCFG2, false, false), CC1101_VALUE_MDMCFG2}, 2, "SYNC MODE");
+    spi_transaction(cc1101, (uint8_t[]){calculate_header_byte(CC1101_CONFIG_PKTCTRL0, false, false), CC1101_VALUE_PKTCTRL0}, 2, "PKTCTRL0");
+    spi_transaction(cc1101, (uint8_t[]){calculate_header_byte(CC1101_CONFIG_PKTLEN, false, false), CC1101_VALUE_PKTLEN}, 2, "PKTLEN");
+    spi_transaction(cc1101, (uint8_t[]){calculate_header_byte(CC1101_CONFIG_MCSM1, false, false), CC1101_VALUE_MCSM1}, 2, "TXOFF MODE");
+    spi_transaction(cc1101, (uint8_t[]){calculate_header_byte(CC1101_REG_FIFO, false, true), 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01}, 8, "TX FIFO");
+    spi_transaction(cc1101, (uint8_t[]){calculate_header_byte(CC1101_CONFIG_IOCFG0, false, false), CC1101_VALUE_IOCFG0}, 2, "GDO0 CONFIG");
+    spi_transaction(cc1101, (uint8_t[]){calculate_header_byte(CC1101_CONFIG_FIFOTHR, false, false), CC1101_VALUE_FIFOTHR}, 2, "FIFO THR");
+    spi_transaction(cc1101, (uint8_t[]){CC1101_STROBE_STX}, 1, "TX MODE");
+    ...
+}
+```
+
+Into just this:
+```cpp
+    int state;
+    state = radio.begin(315.0, 25.0, 25.0, 58.0, 0, 4);
+    state = radio.setSyncWord(0xD3, 0x91);
+    state = radio.fixedPacketLengthMode(5);
+    state = radio.transmit((uint8_t[]){0x01, 0x01, 0x01, 0x01, 0x01}, 5);
+```
+A few of the values we explicitly set in our original program were redundant, as the CC1101 has certain defaults that were already aligned with our guide's goals. Even without that, our original code is still far larger than the relatively equivalent Arduino code.
+
+This is the classic abstraction paradigm of the ease and speed of development with libraries vs the customization and performance without one. Most hobbyist projects will benefit from using a library, unless a deeper understanding of the hardware is sought out.
 ### Other Media
 <a id='spi_space'></a>
 <div align="center">
