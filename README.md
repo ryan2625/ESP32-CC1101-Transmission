@@ -753,7 +753,7 @@ The second scenario is `TXFIFO_UNDERFLOW`. This state occurs when the TX FIFO be
 The third scenario, TX FIFO Overflow, occurs when we fill the TX FIFO with more than 64 bytes of data. In this scenario, there isn't a specific state the radio enters like there is for underflow. Instead, the data in the FIFO might become corrupted and the radio may behave unpredictably. 
 
 > [!IMPORTANT]
-> If we set a packet length that is less than the bytes we stored in the TX FIFO, we may complete a transmission and have leftover bytes sitting in the TX FIFO. This is not considered TX FIFO Overflow. Those bytes just remain there until they are emptied or sent in the next transmission.
+> Suppose we set a packet length that is less than the bytes we stored in the TX FIFO. Upon completing a transmission, we may end up having leftover bytes sitting in the FIFO. This is not considered TX FIFO Overflow. Those bytes just remain there until they are emptied or sent in the next transmission.
 
 ---
 
