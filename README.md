@@ -1217,6 +1217,9 @@ Into just this:
 A few of the values we explicitly set in our original program were redundant, as the CC1101 has certain defaults that were already aligned with our guide's goals. Even when considering that, our original code is still far larger than the relatively equivalent Arduino code. Not to mention all the time needed for navigating and understanding the datasheet.
 
 This is the classic abstraction tradeoff... the ease and speed of development with libraries vs the customization and performance without them. Most hobbyist projects will benefit from using a library, unless a deeper understanding of the hardware is sought out.
+
+---
+This will be the end of this series on investigating the CC1101. If you would like to ask any questions or discuss embedded devices, feel free to reach out on [LinkedIn!](https://www.linkedin.com/in/ryan-freas/)
 ### Other Media
 <a id='spi_space'></a>
 <div align="center">
