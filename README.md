@@ -56,7 +56,6 @@ This README will heavily reference the official **[TI CC1101 transceiver datashe
 8. [Running the Program](#8-running-the-program)  
    - [Proving the Transmission Was Successful](#proving-the-transmission-was-successful)
 9. [Datasheet and Theory Abstraction in Libraries](#9-datasheet-and-theory-abstraction-in-libraries)
-   - [Other Media](#other-media)
 
 # 1. Important Concepts
 ## Carrier Frequency
