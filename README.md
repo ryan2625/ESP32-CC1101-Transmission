@@ -1006,7 +1006,7 @@ I (4367) CC1101: GDO0 level: 0
 I (4367) main_task: Returned from app_main()
 ```
 ---
-The first part of the log is printed after loading 7 bytes into the TX FIFO and configuring all of our registers. As the comment states, these are all of our configuration values. I've attached comments to some of the logs below regarding their value or function...
+The first part of the log is printed after loading 7 bytes into the TX FIFO and configuring all of our registers. As the log states, these are all of our configuration values. I've attached comments to some of the logs below regarding their value or function...
 ```rust
 I (2297) CC1101: ========== ALL CONFIG VALUES ==========
 I (2297) CC1101: Operation: READ AUTOCAL | 0x00 0x14
@@ -1048,7 +1048,7 @@ All of the values logged above correspond to the values we came up with in the p
 
 ---
 
-The next part of the logs is when we enter `TX` mode which will automatically start sending preamble bits, the sync word, and a 5 byte packet. Upon a successful transmission completion, we should see the `TXOFF_MODE` putting our radio into the `FSTXON` state.
+The next part of the log is when we enter `TX` mode which will automatically start sending preamble bits, the sync word, and a 5 byte packet. Upon a successful transmission completion, we should see the `TXOFF_MODE` putting our radio into the `FSTXON` state.
 
 After our radio finishes its transmission, we see the following logged to the console:
 ```rust
