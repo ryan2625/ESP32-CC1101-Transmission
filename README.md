@@ -512,7 +512,7 @@ Where *f<sub>xosc</sub>* is the frequency of the crystal oscillator, *DEVIATION_
 
 In practice, the frequency deviation and data rate values should be chosen together. To simplify this guide, we will instead pick a generally safe deviation of approximately 25 kHz. Relating the data rate to the frequency is called the *modulation index*; further reading on 2-FSK is recommended if you want to optimize your values.
 
-Since the `DEVIATN` register uses 3 bits for the exponent and 3 bits for the mantissa, each field can hold a value from `000` to `111`. This means there are 8 different valid values for each part, which means a total of 64 possible combinations between them. 
+Since the `DEVIATN` register uses 3 bits for the exponent and 3 bits for the mantissa, each field can hold a value from `000` to `111`. This means there are 8 different valid values for each part, leading to a total of 64 possible combinations between them. 
 
 I experimented with a few different values trying to get as close as possible to 25 kHz, and the best combination I came up with was *DEVIATION_M* = 0 and *DEVIATION_E* = 4. This gives us the equation:
 
@@ -524,7 +524,7 @@ I experimented with a few different values trying to get as close as possible to
 </div>
 <br>
 
-Solving this results in *f<sub>dev</sub>* = **25.4 kHz**. Looking at the [`DEVIATN`](https://github.com/ryan2625/CC1101-TX/blob/main/Assets/DEVIATN.png) register, we can see that bit 7 and bit 3 are unused, while bits 6-4 store the exponent and bits 2-0 store the mantissa. We calculated the exponent to be 4 and the mantissa to be 0, so this leaves us with the binary number `0100 0000`. Converting this value to hexadecimal gives us `0x40` which we will send to the register. 
+Solving this results in *f<sub>dev</sub>* = **25.4 kHz**. Looking at the [`DEVIATN`](https://github.com/ryan2625/CC1101-TX/blob/main/Assets/DEVIATN.png) register, we can see that bit 7 and bit 3 are unused, while bits 6-4 store the exponent and bits 2-0 store the mantissa. Substituting our exponent value of 4 and the mantissa value of 0, we end up with the binary number `0100 0000`. Converting this value to hexadecimal gives us `0x40`, which we will send to the register. 
 
 # 4. Bit Timing and Data Rate
 ## **Section 12: Data Rate Programming** Overview
