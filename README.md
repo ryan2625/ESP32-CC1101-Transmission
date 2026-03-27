@@ -1044,9 +1044,8 @@ All of the values logged above correspond to the values we came up with in the p
 
 ---
 
-The next part of the log is when we enter `TX` mode which will automatically start sending preamble bits, the sync word, and a 5 byte packet. Upon a successful transmission completion, we should see the `TXOFF_MODE` putting our radio into the `FSTXON` state.
+The next part of the log is printed after we enter `TX` mode which will automatically start sending preamble bits, the sync word, and a 5 byte packet. Upon a successful transmission completion, we should see the [`TXOFF_MODE`](https://github.com/ryan2625/ESP32-CC1101-Transmission?tab=readme-ov-file#tx-mode-scenarios) putting our radio into the `FSTXON` state.
 
-After our radio finishes its transmission, we see the following logged to the console:
 ```rust
 I (3367) CC1101: ============ AFTER 5 BYTES ============
 I (3367) CC1101: Operation: READ MARCSTATE | 0x30 0x12
