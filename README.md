@@ -47,7 +47,7 @@ This README will heavily reference the official **[TI CC1101 transceiver datashe
    - [Setting the Output Power](#setting-the-output-power)
 6. [Transmitting Packets](#6-transmitting-packets)
    - [Packet Structure](#packet-structure)  
-   - [Transmission mechanics and the Data FIFO](#transmission-mechanics-and-the-data-fifo) 
+   - [Transmission Mechanics and the Data FIFO](#transmission-mechanics-and-the-data-fifo) 
    - [TX FIFO Threshold](#tx-fifo-threshold)
 7. [Sending Data in C++](#7-sending-data-in-c)
    - [Configuring the SPI Bus](#configuring-the-spi-bus)  
