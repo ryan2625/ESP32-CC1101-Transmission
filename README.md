@@ -1104,12 +1104,12 @@ The receiver code continuously polls the RX FIFO for incoming packets. Recall fr
 The logs above generally reflect this scenario with a few issues. 
 
 ---
-The first issue is that the sync word (`0xD3 0x91`) shows up in the RX FIFO. This is unexpected since the sync word is handled internally, and the RX FIFO should only capture bytes from the packet's data field. This issue was likely caused due to RadioLib defaulting to a 16-bit sync mode, while our transmitter used 32 bits. This caused the receiver to start filling two bytes too early.
+The first issue is that the sync word (`0xD3 0x91`) shows up in the RX FIFO. This is unexpected since the sync word is handled internally, and the RX FIFO should only capture bytes from the packet's data field. This issue was likely caused due to RadioLib defaulting to a 16-bit sync mode, while our transmitter used 32 bits. Consequently, the receiver started filling two bytes too early.
 
 Because of that misalignment, the first packet appears truncated. The full 5 bytes of `0x01` were still transmitted, but not all were printed out in the log. That leaves only two valid bytes for the second transmission, which is expected.
 
 ---
-The second issue is the bytes logged in the second transmission. It contains the 5 bytes `D3 91 01 01 DA`. The first two are the sync word, the next two is the remaining data from the TX FIFO, and the last byte is mysterious. 
+The second issue is the bytes logged in the second transmission. It contains the 5 bytes `D3 91 01 01 DA`. The first two are the sync word, the next two are the remaining data from the TX FIFO, and the last byte is mysterious. 
 
 At first, I thought similar to how buffer underflow works in languages like C/CPP, the radio might have underflowed and grabbed the last value from the register in the address space below the TX FIFO, which would be `PATABLE`. 
 
