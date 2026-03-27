@@ -1020,6 +1020,7 @@ I (2317) CC1101: Operation: READ POWER | 0x00 0x51
 I (2317) CC1101: Operation: READ SYNC WORD | 0x00 0xD3 0x91
 I (2327) CC1101: Operation: READ PREAMBLE | 0x00 0x22
 I (2327) CC1101: Operation: READ PKTCTRL0 | 0x00 0x00 
+
 // 5 byte packet length
 I (2337) CC1101: Operation: READ PKTLEN | 0x00 0x05
 // Set GDO0 to give alerts about TX FIFO threshold
