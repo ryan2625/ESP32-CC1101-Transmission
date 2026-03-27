@@ -47,7 +47,7 @@ This README will heavily reference the official **[TI CC1101 transceiver datashe
    - [Setting the Output Power](#setting-the-output-power)
 6. [Transmitting Packets](#6-transmitting-packets)
    - [Packet Structure](#packet-structure)  
-   - [Transmission mechanics and Data FIFO](#transmission-mechanics-and-data-fifo) 
+   - [Transmission mechanics and the Data FIFO](#transmission-mechanics-and-data-fifo) 
    - [TX FIFO Threshold](#tx-fifo-threshold)
 7. [Sending Data in C++](#7-sending-data-in-c)
    - [Configuring the SPI Bus](#configuring-the-spi-bus)  
@@ -671,7 +671,7 @@ There are a few other optional packet features that we will not be implementing 
 - The Address Byte, which is a byte dedicated towards address filtering. Similar to the sync word, this enables receivers to ignore irrelevant traffic and only look at signals with a specific address byte.
 
 
-## Transmission Mechanics and Data FIFO 
+## Transmission Mechanics and the Data FIFO 
 
 ### `TX` Radio State
 As seen earlier in the [simplified radio control diagram](https://github.com/ryan2625/CC1101-TX/blob/main/Assets/simplified_state_diagram.png), the radio has a set number of states it can exist in. Each state can only be entered through specific transitions, including the state for transmit (`TX`) mode.
