@@ -69,7 +69,7 @@ This README will heavily reference the official **[TI CC1101 transceiver datashe
       - [`spi_transaction`](#spi_transaction)
       - [`calculate_header_byte`](#calculate_header_byte)
    - [Configuring Registers](#configuring-registers)
-8. [Running the Program](#9-running-the-program)  
+8. [Running the Program](#8-running-the-program)  
    - [Proving the Transmission Was Successful](#proving-the-transmission-was-successful)
 9. [Datasheet and Theory Abstraction in Libraries](#9-datasheet-and-theory-abstraction-in-libraries)
    - [Other Media](#other-media)
