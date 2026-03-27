@@ -706,7 +706,7 @@ Page 93: `MARCSTATE` Register
 
 </div>
 
->Note: Both the STX command strobe and the MARCSTATE register are located at address `0x35`. The difference is that when we communicate with the CC1101 using the SPI interface, we are changing the burst and R/W bit values to [distinguish between a status register and a command strobe](https://github.com/ryan2625/ESP32-CC1101#differentiate) at the same address. Remember that an SPI transaction starts with a header byte that contains a R/W bit, a burst bit, and a 6 bit address.<br><br> Setting the burst and R/W bit to 1 changes the header byte from `0x35` to `0xF5`. Sending `0x35` activates the STX strobe, while sending `0xF5` returns the MARCSTATE register value. Refer back to the section regarding [expected transaction format](https://github.com/ryan2625/ESP32-CC1101?tab=readme-ov-file#expected-transaction-format) from my first guide. 
+>Note: Both the STX command strobe and the MARCSTATE register are located at address `0x35`. The difference is that when we communicate with the CC1101 using the SPI interface, we are changing the burst and R/W bit values to [distinguish between a status register and a command strobe](https://github.com/ryan2625/ESP32-CC1101?tab=readme-ov-file#address-overloading) at the same address. Remember that an SPI transaction starts with a header byte that contains a R/W bit, a burst bit, and a 6 bit address.<br><br> Setting the burst and R/W bit to 1 changes the header byte from `0x35` to `0xF5`. Sending `0x35` activates the STX strobe, while sending `0xF5` returns the MARCSTATE register value. Refer back to the section regarding [expected transaction format](https://github.com/ryan2625/ESP32-CC1101?tab=readme-ov-file#expected-transaction-format) from my first guide. 
 
 ---
 ### Writing to the TX FIFO
@@ -1052,7 +1052,7 @@ I (3367) CC1101: Operation: READ MARCSTATE | 0x30 0x12
 I (3367) CC1101: Operation: READ TXBYTES | 0x30 0x02 
 I (3367) CC1101: GDO0 level: 0
 ```
-As expected, our `MARCSTATE` register lets us know we are currently in the `FSXTON` state (corresponding to `0x12`). We also see from the `TXBYTES` register that we have exactly 2 (`0x02`) bytes in our TX FIFO. 
+As expected, our `MARCSTATE` register lets us know we are currently in the `FSTXON` state (corresponding to `0x12`). We also see from the `TXBYTES` register that we have exactly 2 (`0x02`) bytes in our TX FIFO. 
 
 Since we only have 2 bytes left in our TX FIFO and our threshold is 5, Our `GDO0` pin is now reading low.
 
