@@ -8,7 +8,7 @@
 
 This project's primary goal is to demonstrate how to transmit a signal using the CC1101 transceiver with the ESP-IDF framework. We will also explore how to interpret and navigate long technical datasheets, particularly those for RF devices. This guide is intended for readers looking to get started writing firmware for any embedded device.
 
-Reading [my previous writeup](https://github.com/ryan2625/ESP32-CC1101/tree/main?tab=readme-ov-file#esp32-cc1101) first will be very helpful for following this guide. In that writeup, I discuss the software and hardware prerequisites, as well as explain fundamental concepts about embedded devices. It also shows the more rudimentary task of reading a status register inside of the CC1101. 
+Reading [my previous writeup](https://github.com/ryan2625/ESP32-CC1101/tree/main?tab=readme-ov-file#esp32-cc1101) first will be very helpful when following this guide. In that writeup, I discuss the software and hardware prerequisites, as well as explain fundamental concepts about embedded devices. It also shows the more rudimentary task of reading a status register inside of the CC1101. 
 
 It is far more complex to transmit a radio signal with our device and the theory can be difficult to understand, so ensure you are comfortable with the topics in that guide before proceeding.
 
@@ -78,7 +78,7 @@ This README will heavily reference the official **[TI CC1101 transceiver datashe
 ## Carrier Frequency
 The CC1101 uses what is known as a 'Carrier Frequency' to transmit data. The carrier frequency itself is just a sine wave, and properties of this wave are modulated to encode information. Common modulation techniques include FM and AM. FM (frequency modulation) works by shifting the frequency slightly while AM (amplitude modulation) works by varying the height of the wave to represent data.
 
-> Example: 2-FSK, which is a type of FM modulation, works by shifting between specific frequencies to represent bits. The amount the frequency shifts by is called the 'deviation.' If we are transmitting a 315 MHz signal, we might use a deviation of 25 kHz and send a 314.975 MHz frequency to signify a `0` bit and a 315.025 MHz to signify a `1` bit.
+> Example: 2-FSK, which is a type of FM modulation, works by shifting between specific frequencies to represent bits. The amount the frequency shifts by is called the 'deviation.' If we are transmitting a 315 MHz signal, we might use a deviation of 25 kHz and send 314.975 MHz to signify a `0` bit and 315.025 MHz to signify a `1` bit.
 
 <div align="center">
 
