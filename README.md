@@ -544,7 +544,7 @@ Page 76: Data Rate Registers
 </div>
 
 ## Calculating the Data Rate
-The primary equation for calculating the data rate is given below. The variables in these equations are the data rate *R<sub>DATA</sub>*, data rate mantissa *DRATE_M*, data rate exponent *DRATE_E*, and the crystal oscillator frequency *f<sub>xosc</sub>*. The data rate formula the CC1101 uses internally is given below:
+There are a few important equations to consider when calculating the data rate. The variables in these equations are the data rate *R<sub>DATA</sub>*, data rate mantissa *DRATE_M*, data rate exponent *DRATE_E*, and the crystal oscillator frequency *f<sub>xosc</sub>*. The data rate formula the CC1101 uses internally is given below:
 
 <div align="center">
 
