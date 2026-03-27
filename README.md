@@ -1086,8 +1086,8 @@ The receiver logs the following data from the RX FIFO:
 [CC1101] Waiting for 5-byte packet...
 [CC1101] Packet received
 Data:  D3 91 01 01 01
-RSSI:  -58.50 dBm
-LQI:   0
+RSSI:  -58.50 dBm // Strength of signal
+LQI:   0 // Signal integrity
 [CC1101] Waiting for 5-byte packet...
 [CC1101] Packet received
 Data:  D3 91 01 01 DA  
