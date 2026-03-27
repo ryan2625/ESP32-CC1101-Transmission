@@ -1020,28 +1020,21 @@ I (2317) CC1101: Operation: READ POWER | 0x00 0x51
 I (2317) CC1101: Operation: READ SYNC WORD | 0x00 0xD3 0x91
 I (2327) CC1101: Operation: READ PREAMBLE | 0x00 0x22
 I (2327) CC1101: Operation: READ PKTCTRL0 | 0x00 0x00 
-
 // 5 byte packet length
 I (2337) CC1101: Operation: READ PKTLEN | 0x00 0x05
-
 // Set GDO0 to give alerts about TX FIFO threshold
 I (2337) CC1101: Operation: READ IOCFG0 | 0x00 0x02
-
 // Our TXFIFO Threshold is 5 bytes
 I (2347) CC1101: Operation: READ FIFOTHR | 0x00 0x0E 
-
 // MCSM1 is the register for TXOFF_MODE. We set this field to 01, which essentially just means
 // that the radio will send the strobe FSTXON after a transmission is complete. This is a state
 // that performs some calibration steps that allows us to enter TX mode faster the next time
 // we need to.
 I (2347) CC1101: Operation: READ MCSM1 | 0x00 0x31
-
 // This MARCSTATE value tells us the radio is in IDLE mode which is to be expected
 I (2347) CC1101: Operation: READ MARCSTATE | 0x00 0x01 
-
 // We have loaded up 7 bytes into our TX FIFO at this point
 I (2357) CC1101: Operation: READ TXBYTES | 0x00 0x07
-
 // Our GDO0 pin reads high, telling us we have more than 5 bytes in our TX FIFO
 I (2357) CC1101: GDO0 level: 1
 ```
