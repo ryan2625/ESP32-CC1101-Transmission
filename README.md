@@ -318,17 +318,17 @@ Every radio transmission has specific parameters that must be configured, regard
 
 ### Optional Sections
 - **Section 8: Configuration Overview** - Description of different CC1101 parameters and capabilities.
-- **Section 9: Configuration Software** - Suggestions on software to assist in calculating register values. This guide will not be using the recommended configuration software (SmartRF Studio); we will be solving the datasheet equations by hand.
+- **Section 9: Configuration Software** - Suggestions on software to assist in calculating register values. This guide will not be using the recommended configuration software (SmartRF Studio); rather, we will be solving the datasheet equations by hand.
 - **Section 14: Demodulator, Symbol Synchronizer, and Data Decision** - Offers context for how the CC1101 handles packets. 
 - **Section 18: Forward Error Correction with Interleaving** - Describes optional error correction techniques used to improve reliability during transmission. We will not be investigating this section in this guide.
 
 # 2. Frequency Programming
 ## **Section 21: Frequency Programming** Overview
-Frequency programming in the CC1101 is a channel oriented system. This means that you can store multiple frequencies inside registers and switch between them instantaneously. In this guide, we will only be configuring one frequency, so the parts in the datasheet regarding the `MDMCFG0.CHANSPC_M`, `MDMCFG1.CHANSPC_E`, `FSCTRL1.FREQ_IF`, and `CHANNR.CHAN` channel fields can be ignored for simplicity. 
+Frequency programming in the CC1101 is a channel-oriented system. This means that you can store multiple frequencies inside registers and switch between them instantaneously. In this guide, we will only be configuring one frequency, so the parts in the datasheet regarding the `MDMCFG0.CHANSPC_M`, `MDMCFG1.CHANSPC_E`, `FSCTRL1.FREQ_IF`, and `CHANNR.CHAN` channel fields can be ignored for simplicity. 
 
 Note that parameters such as the frequency can only be changed while the radio is in the `IDLE` state.
 
-The frequency is stored as a 24 bit word split across three registers containing 1 byte each: `FREQ2`, `FREQ1`, and `FREQ0`. Table 45 shows the  addresses to each register (`0x0D`, `0x0E`, and `0x0F` respectively).
+The frequency is stored as a 24-bit word split across three registers containing 1 byte each: `FREQ2`, `FREQ1`, and `FREQ0`. Table 45 shows the  addresses to each register (`0x0D`, `0x0E`, and `0x0F` respectively).
 
 > [!IMPORTANT]
 > This 24 bit word is not representing a frequency such as 315 MHz. Rather, it is a value the CC1101 will use to derive the frequency using its equations. Also, a 'word' in this context simply means a collection of bits.
@@ -493,11 +493,11 @@ As mentioned before, we are implementing 2-FSK modulation which requires a value
 
 Where *f<sub>xosc</sub>* is the frequency of the crystal oscillator, *DEVIATION_M* is the mantissa, and *DEVIATION_E* is the exponent. The configuration software outlined in **Section 9** of the datasheet can be used to generate mantissa and exponent values based off of a target deviation. Since we are solving the equation manually, we will instead have to examine how different mantissa and exponent values affect the resulting frequency deviation. 
 
-In practice, the frequency deviation and data rate values should be chosen together. To simplify this guide, we will instead pick a generally safe deviation of approximately 25 kHz. Relating the data rate to the frequency is called the *modulation index*; further reading on 2-FSK is recommended if you want to optimize your values.
+In practice, the frequency deviation and data rate values should be chosen together. To simplify this guide, we will instead pick a generally safe deviation of approximately 25 kHz. Relating the data rate to the frequency is called the *modulation index*. Further reading on 2-FSK is recommended if you want to optimize your values.
 
 Since the `DEVIATN` register uses 3 bits for the exponent and 3 bits for the mantissa, each field can hold a value from `000` to `111`. This means there are 8 different valid values for each part, leading to a total of 64 possible combinations between them. 
 
-I experimented with a few different values trying to get as close as possible to 25 kHz, and the best combination I came up with was *DEVIATION_M* = 0 and *DEVIATION_E* = 4. This gives us the equation:
+I experimented with a few different values trying to get as close as possible to 25 kHz, and the best combination I came up with was *DEVIATION_M* = 0 and *DEVIATION3_E* = 4. This gives us the equation:
 
 <div align="center">
 
@@ -513,7 +513,7 @@ Solving this results in *f<sub>dev</sub>* = **25.4 kHz**. Looking at the [`DEVIA
 ## **Section 12: Data Rate Programming** Overview
 The data rate of the radio determines how fast data is transmitted or received. Similar to how we stored the deviation for 2-FSK modulation, we will store the mantissa and exponent calculated from the data rate equation into registers instead of the literal data rate value. 
 
-The CC1101 will use these values to derive the data rate in baud, where a baud is a unit of transmission speed. The relevant fields for this section are the `MDMCFG3.DRATE_M` and `MDMCFG4.DRATE_E` fields.
+The CC1101 will use these values to derive the data rate in baud (which is a unit of transmission speed). The relevant fields for this section are the `MDMCFG3.DRATE_M` and `MDMCFG4.DRATE_E` fields.
 
 As stated previously, the data rate and frequency deviation should be related to one another through a modulation index. For this guide, we will instead simply use a safe baud rate of 25 kBaud. 
 
@@ -527,7 +527,7 @@ Page 76: Data Rate Registers
 </div>
 
 ## Calculating the Data Rate
-There are a few important equations to consider when calculating the data rate. The variables in these equations are the data rate *R<sub>DATA</sub>*, data rate mantissa *DRATE_M*, data rate exponent *DRATE_E*, and the crystal oscillator frequency *f<sub>xosc</sub>*. The data rate formula the CC1101 uses internally is given below:
+There are a few important equations to consider when calculating the data rate. The variables in these equations are the data rate (*R<sub>DATA</sub>*), data rate mantissa (*DRATE_M*), data rate exponent (*DRATE_E*), and the crystal oscillator frequency (*f<sub>xosc</sub>*). The data rate formula the CC1101 uses internally is given below:
 
 <div align="center">
 
@@ -568,7 +568,7 @@ Solving this equation gives us *DRATE_E* = 9.
 
 We now have all the appropriate values to substitute into the equation that tells us the value of *DRATE_M*. Solving that equation gives us *DRATE_M* ​≈ 248.12. We will round this to the nearest integer which will be 248, as the register for the mantissa is only 8 bits. This means it can only store integers between 0-255, no decimals.
 
-Since the data rate mantissa is the only field contained within the ![`MDMCFG3`](https://github.com/ryan2625/ESP32-CC1101-Transmission/blob/main/Assets/MDMCFG.png) register, we do not have to worry about preserving any other bits. We will send our value of 248 here in hexadecimal which works out to be `0xF8`. 
+Since the data rate mantissa is the only field contained within the [`MDMCFG3`](https://github.com/ryan2625/ESP32-CC1101-Transmission/blob/main/Assets/MDMCFG.png) register, we do not have to worry about preserving any other bits. We will send our value of 248 here in hexadecimal which works out to be `0xF8`. 
 
 The exponent part of the equation is contained in the [`MDMCFG4`](https://github.com/ryan2625/CC1101-TX/blob/main/Assets/MDMCFG.png) register, and it shares this register with fields for configuring the channel bandwidth. It is good practice to preserve the default values in these registers if we don't need to modify them. Therefore, we will send the bits `10` for `CHANBW_E`, `00` for `CHANBW_M`, and `1001` for `DRATE_E`. We end up with `10001001` = `0x89`. 
 
@@ -593,7 +593,7 @@ Below is a table showing what power output corresponds to what setting value. Th
 
 </div>
 
->Note: There are tables for multi-layer inductors and wire-wound inductors in section 24. The power output doesn't have to be a specific value for this project's goal, but just be aware that the power settings can change depending on what type of CC1101 module you have.
+>Note: There are tables for multi-layer inductors and wire-wound inductors in **Section 24**. The power output doesn't have to be a specific value for this project's goal, but just be aware that the power settings can change depending on what type of CC1101 module you have.
 
 ## Setting the Output Power
 The `PATABLE` register is located at address `0x3E`. Since we are only setting a single power output, we will just be sending one byte to this address. Based on table 39, `0x51` provides a reasonable midrange transmit power for the 315 MHz band; we will send this value to the register. **Section 10.6** provides more information on how to access the `PATABLE` register.
@@ -630,7 +630,7 @@ Page 77: `MDMCFG1` Register
 ### Synchronization Word
 The Synchronization (sync) word's primary purpose is to mark the exact start of valid data in a signal. It can also help with network filtering, where a receiver can check the sync word of a signal and ignore signals that do not match the expected sync word. 
 
-More information on the sync word can be found in section **14.3: Byte Synchronization**. The sync word value itself is arbitrary, but the receiver and the transmitter must match each other if it is used.
+More information on the sync word can be found in **Section 14.3: Byte Synchronization**. The sync word value itself is arbitrary, but the receiver and the transmitter must match each other if it is used.
 
 The CC1101 recommends implementing a 4-byte sync word, stored in the `SYNC1` at `0x04` and `SYNC0` at `0x05` registers. To reach the recommended 4 bytes in a sync word, we will have to send the `MDMCFG2.SYNC_MODE` field either a 3 (`011`) or a 7 (`111`). This will duplicate the 2 bytes we have stored in `SYNC1` and `SYNC0` and send 4 bytes in total when we transmit data. 
 
@@ -642,7 +642,7 @@ Page 77: `MDMCFG2.SYNC_MODE` Field
 
 </div>
 
->Note: If you have a sync word, you must always include preamble bits and vice versa. Both of these will be automatically inserted at the start of a transmission in setting 3 or 7; we will not have to manually send them after configuration.
+>Note: If you have a sync word, you must always include preamble bits and vice versa. Both of these will be automatically inserted at the start of a transmission in setting 3 or 7. We will not have to manually send them after configuration.
 
 ### Packet Length
 The CC1101 expects a packet length mode to be configured in the `PKTCTRL0.LENGTH_CONFIG` field at `0x08`. There are three different modes for packet length...
@@ -689,13 +689,13 @@ Page 93: `MARCSTATE` Register
 
 </div>
 
->Note: Both the STX command strobe and the MARCSTATE register are located at address `0x35`. The difference is that when we communicate with the CC1101 using the SPI interface, we are changing the burst and R/W bit values to [distinguish between a status register and a command strobe](https://github.com/ryan2625/ESP32-CC1101?tab=readme-ov-file#address-overloading) at the same address. Remember that an SPI transaction starts with a header byte that contains a R/W bit, a burst bit, and a 6 bit address.<br><br> Setting the burst and R/W bit to 1 changes the header byte from `0x35` to `0xF5`. Sending `0x35` activates the STX strobe, while sending `0xF5` returns the MARCSTATE register value. Refer back to the section regarding [expected transaction format](https://github.com/ryan2625/ESP32-CC1101?tab=readme-ov-file#expected-transaction-format) from my first guide. 
+>Note: Both the STX command strobe and the MARCSTATE register are located at address `0x35`. The difference is that when we communicate with the CC1101 using the SPI interface, we are changing the burst and R/W bit values to [distinguish between a status register and a command strobe](https://github.com/ryan2625/ESP32-CC1101?tab=readme-ov-file#address-overloading) at the same address. Remember that an SPI transaction starts with a header byte that contains a R/W bit, a burst bit, and a 6-bit address.<br><br> Setting the burst and R/W bit to 1 changes the header byte from `0x35` to `0xF5`. Sending `0x35` activates the STX strobe, while sending `0xF5` returns the MARCSTATE register value. Refer back to the section regarding [expected transaction format](https://github.com/ryan2625/ESP32-CC1101?tab=readme-ov-file#expected-transaction-format) from my first guide. 
 
 ---
 ### Writing to the TX FIFO
 The CC1101 contains two data FIFOs, one for transmitting data (the TX FIFO) and one for receiving data (the RX FIFO).
 
-The TX/RX FIFOs are accessed through the address `0x3F`. This area does not refer to a register, but rather to a [data buffer](https://en.wikipedia.org/wiki/Data_buffer). The TX FIFO is implemented as a 64 byte queue that sends data in the exact order it is fed; as data is transmitted, it leaves the buffer.
+The TX/RX FIFOs are accessed through the address `0x3F`. This area does not refer to a register, but rather to a [data buffer](https://en.wikipedia.org/wiki/Data_buffer). The TX FIFO is implemented as a 64-byte queue that sends data in the exact order it is fed; as data is transmitted, it leaves the buffer.
 
 Below are the possible FIFO access [header bytes](https://github.com/ryan2625/ESP32-CC1101?tab=readme-ov-file#expected-transaction-format) from **Section 10.5** and their respective functionalities. A R/W bit set to `0` corresponds to TX FIFO access, while a `1` corresponds to RX FIFO access.
 
@@ -761,7 +761,7 @@ The maximum value of `FIFO_BYTES_AVAILABLE` is 15, or `1111`. When `FIFO_BYTES_A
 
 >Note: Recall that the  chip status byte is always the first byte received back from the CC1101 in an SPI transaction.
 ## TX FIFO Threshold
-As stated earlier, the TX FIFO is a 64 byte buffer that holds the data you will transmit. Causing overflow or underflow in this buffer can cause error states and lead to unpredictable radio behavior. In addition to the chip status byte, there is another optional mechanism to assist us with managing the TX FIFO called the FIFO threshold.
+As stated earlier, the TX FIFO is a 64-byte buffer that holds the data you will transmit. Causing overflow or underflow in this buffer can cause error states and lead to unpredictable radio behavior. In addition to the chip status byte, there is another optional mechanism to assist us with managing the TX FIFO called the FIFO threshold.
 
 In `TX` mode, the FIFO threshold is essentially a way to warn us when the number of bytes in the TX FIFO crosses a certain level. We can set the threshold by sending a value to the `FIFOTHR.FIFO_THR` register field at `0x03`. Keep in mind this threshold is simply a warning, and does not prevent underflow on its own.
 
@@ -1027,7 +1027,7 @@ All of the values logged above correspond to the values we came up with in the p
 
 ---
 
-The next part of the log is printed after we enter `TX` mode which will automatically start sending preamble bits, the sync word, and a 5 byte packet. Upon a successful transmission completion, we should see the [`TXOFF_MODE`](https://github.com/ryan2625/ESP32-CC1101-Transmission?tab=readme-ov-file#tx-mode-scenarios) register putting our radio into the `FSTXON` state.
+The next part of the log is printed after we enter `TX` mode which will automatically start sending preamble bits, the sync word, and a 5-byte packet. Upon a successful transmission completion, we should see the [`TXOFF_MODE`](https://github.com/ryan2625/ESP32-CC1101-Transmission?tab=readme-ov-file#tx-mode-scenarios) register putting our radio into the `FSTXON` state.
 
 ```rust
 I (3367) CC1101: ============ AFTER 5 BYTES ============
@@ -1081,7 +1081,7 @@ The receiver code continuously polls the RX FIFO for incoming packets. Recall fr
 The logs above generally reflect this scenario with a few issues. 
 
 ---
-The first issue is that the sync word (`0xD3 0x91`) shows up in the RX FIFO. This is unexpected since the sync word is handled internally, and the RX FIFO should only capture bytes from the packet's data field. This issue was likely caused due to RadioLib defaulting to a 16 bit sync mode, while our transmitter used 32 bits. Consequently, the receiver started filling the buffer two bytes too early.
+The first issue is that the sync word (`0xD3 0x91`) shows up in the RX FIFO. This is unexpected since the sync word is handled internally, and the RX FIFO should only capture bytes from the packet's data field. This issue was likely caused due to RadioLib defaulting to a 16-bit sync mode, while our transmitter used 32 bits. Consequently, the receiver started filling the buffer two bytes too early.
 
 Because of that misalignment, the first packet appears truncated. The full 5 bytes of `0x01` were still transmitted, but not all were printed out in the log. That leaves only two valid bytes out of the original 7 for the second transmission, which is expected.
 
