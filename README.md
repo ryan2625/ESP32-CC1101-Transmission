@@ -1235,7 +1235,7 @@ Into just this:
     state = radio.fixedPacketLengthMode(5);
     state = radio.transmit((uint8_t[]){0x01, 0x01, 0x01, 0x01, 0x01}, 5);
 ```
-A few of the values we explicitly set in our original program were redundant, as the CC1101 has certain defaults that were already aligned with our guide's goals. Even when considering that, our original code is still far larger than the relatively equivalent Arduino code. Not to mention all the time needed for navigating and understanding the datasheet.
+A few of the values we explicitly set in our original program were redundant, as the CC1101 has certain defaults register values that were already aligned with our guide's goals. Even when considering that, our original code is still far larger than the relatively equivalent Arduino code. Not to mention all the time needed for navigating and understanding the datasheet.
 
 This is the classic abstraction tradeoff... the ease and speed of development with libraries vs the customization and performance without them. Most hobbyist projects will benefit from using a library, unless a deeper understanding of the hardware is sought out.
 
