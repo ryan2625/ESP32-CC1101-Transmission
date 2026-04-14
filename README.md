@@ -109,9 +109,9 @@ The concept of a 'radio state' in the CC1101 refers to the device's ability to e
 
 Pictured below is the simplified Radio Control State diagram. It is not necessary to understand every part of the diagram, but it is helpful to understand the general concept. The [full diagram](#entire_radio) can be found on page 50 of the datasheet. 
 
-One way to think about radio states is to imagine starting up your car. You can’t just press the start button at any time. It has to be in the correct “state” first, such as being in Park with your foot on the brake. Only when those conditions are met does the “start engine” action work.
+One way to think about radio states is to imagine starting up your car. You can’t just press the start button at any time. It has to be in the correct 'state' first, such as being in Park with your foot on the brake. Only when those conditions are met does the 'start engine' action work.
 
-In the same way, the CC1101 radio can only perform certain actions when it is in the correct internal state.
+In the same way, the CC1101 radio can only perform certain actions when it is in the correct internal radio state.
 
 <div align="center">
    
@@ -128,7 +128,7 @@ Page 28: Simplified Radio Control Diagram
 ## Navigating the Datasheet
 The CC1101 datasheet is around 100 pages long and contains many diagrams, equations, and tables detailing various properties of the device. If you have never worked with a datasheet before, it can be difficult to know where to begin. To approach this, we will work backwards from our goal of transmitting a signal with the CC1101 and think about what properties we need to configure in order to achieve this.
 
- **Section 8: Configuration Overview** gives a holistic account of the radio's different functions and will be helpful in guiding our intuition. We can separate the datasheet sections into three different categories.
+ **Section 8: Configuration Overview** gives a holistic account of the radio's different functions and will be helpful in guiding our intuition. We can separate the datasheet sections into three different categories:
 
 1. The first category includes sections regarding general configuration. This includes how we can communicate with the CC1101, any specific power-on sequence the device requires, and other basic setup details.
 
