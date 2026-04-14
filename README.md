@@ -107,7 +107,7 @@ To preserve all other default values while only updating the `FOC_PRE_K` field, 
 ## Radio States
 The concept of a 'radio state' in the CC1101 refers to the device's ability to exist and switch between different operational modes. Essentially, the CC1101 can only perform specific actions like transmitting a signal if it is in the correct radio state.
 
-Pictured below is the radio control diagram. It is not necessary to understand every part of the diagram, but it is helpful to understand the general concept. The [full state control diagram](#entire_radio) can be found on page 50 of the datasheet. 
+Pictured below is the simplified Radio Control State diagram. It is not necessary to understand every part of the diagram, but it is helpful to understand the general concept. The [full diagram](#entire_radio) can be found on page 50 of the datasheet. 
 
 One way to think about radio states is to imagine starting up your car. You can’t just press the start button at any time. It has to be in the correct “state” first, such as being in Park with your foot on the brake. Only when those conditions are met does the “start engine” action work.
 
