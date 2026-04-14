@@ -118,152 +118,109 @@ With this mental map, let's analyze the datasheet and find the relevant sections
 
 <details>
 <summary><strong>CC1101 Datasheet Table of Contents</strong></summary>
+<pre>
 1. Absolute Maximum Ratings
 2. Operating Conditions
 3. General Characteristics
 4. Electrical Specifications
-
-   4.1 Current Consumption  
-   4.2 RF Receive Section  
-   4.3 RF Transmit Section  
-   4.4 Crystal Oscillator  
-   4.5 Low Power RC Oscillator  
-   4.6 Frequency Synthesizer Characteristics  
-   4.7 Analog Temperature Sensor  
-   4.8 DC Characteristics  
-   4.9 Power-On Reset  
-
+  4.1 Current Consumption
+  4.2 RF Receive Section
+  4.3 RF Transmit Section
+  4.4 Crystal Oscillator
+  4.5 Low Power RC Oscillator
+  4.6 Frequency Synthesizer Characteristics
+  4.7 Analog Temperature Sensor
+  4.8 DC Characteristics
+  4.9 Power-On Reset
 5. Pin Configuration
-
 6. Circuit Description
-
 7. Application Circuit
-
-   7.1 Bias Resistor  
-   7.2 Balun and RF Matching  
-   7.3 Crystal  
-   7.4 Reference Signal  
-   7.5 Additional Filtering  
-   7.6 Power Supply Decoupling  
-   7.7 Antenna Considerations  
-   7.8 PCB Layout Recommendations  
-
+  7.1 Bias Resistor
+  7.2 Balun and RF Matching
+  7.3 Crystal
+  7.4 Reference Signal
+  7.5 Additional Filtering
+  7.6 Power Supply Decoupling
+  7.7 Antenna Considerations
+  7.8 PCB Layout Recommendations
 8. Configuration Overview
-
 9. Configuration Software
-
 10. 4-Wire Serial Configuration and Data Interface
-
-    10.1 Chip Status Byte  
-    10.2 Register Access  
-    10.3 SPI Read  
-    10.4 Command Strobes  
-    10.5 FIFO Access  
-    10.6 PATABLE Access  
-
+  10.1 Chip Status Byte
+  10.2 Register Access
+  10.3 SPI Read
+  10.4 Command Strobes
+  10.5 FIFO Access
+  10.6 PATABLE Access
 11. Microcontroller Interface and Pin Configuration
-
-    11.1 Configuration Interface  
-    11.2 General Control and Status Pins  
-    11.3 Optional Radio Control Feature  
-
+  11.1 Configuration Interface
+  11.2 General Control and Status Pins
+  11.3 Optional Radio Control Feature
 12. Data Rate Programming
-
 13. Receiver Channel Filter Bandwidth
-
 14. Demodulator, Symbol Synchronizer, and Data Decision
-
-    14.1 Frequency Offset Compensation  
-    14.2 Bit Synchronization  
-    14.3 Byte Synchronization  
-
+  14.1 Frequency Offset Compensation
+  14.2 Bit Synchronization
+  14.3 Byte Synchronization
 15. Packet Handling Hardware Support
-
-    15.1 Data Whitening  
-    15.2 Packet Format  
-    15.3 Packet Filtering in Receive Mode  
-    15.4 Packet Handling in Transmit Mode  
-    15.5 Packet Handling in Receive Mode  
-    15.6 Packet Handling in Firmware  
-
+  15.1 Data Whitening
+  15.2 Packet Format
+  15.3 Packet Filtering in Receive Mode
+  15.4 Packet Handling in Transmit Mode
+  15.5 Packet Handling in Receive Mode
+  15.6 Packet Handling in Firmware
 16. Modulation Formats
-
-    16.1 Frequency Shift Keying  
-    16.2 Minimum Shift Keying  
-    16.3 Amplitude Modulation  
-
+  16.1 Frequency Shift Keying
+  16.2 Minimum Shift Keying
+  16.3 Amplitude Modulation
 17. Received Signal Qualifiers and Link Quality Information
-
-    17.1 Sync Word Qualifier  
-    17.2 Preamble Quality Threshold (PQT)  
-    17.3 RSSI  
-    17.4 Carrier Sense (CS)  
-    17.5 Clear Channel Assessment (CCA)  
-    17.6 Link Quality Indicator (LQI)  
-
+  17.1 Sync Word Qualifier
+  17.2 Preamble Quality Threshold (PQT)
+  17.3 RSSI
+  17.4 Carrier Sense (CS)
+  17.5 Clear Channel Assessment (CCA)
+  17.6 Link Quality Indicator (LQI)
 18. Forward Error Correction with Interleaving
-
-    18.1 Forward Error Correction (FEC)  
-    18.2 Interleaving  
-
+  18.1 Forward Error Correction (FEC)
+  18.2 Interleaving
 19. Radio Control
-
-    19.1 Power-On Start-Up Sequence  
-    19.2 Crystal Control  
-    19.3 Voltage Regulator Control  
-    19.4 Active Modes (RX and TX)  
-    19.5 Wake On Radio (WOR)  
-    19.6 Timing  
-    19.7 RX Termination Timer  
-
+  19.1 Power-On Start-Up Sequence
+  19.2 Crystal Control
+  19.3 Voltage Regulator Control
+  19.4 Active Modes (RX and TX)
+  19.5 Wake On Radio (WOR)
+  19.6 Timing
+  19.7 RX Termination Timer
 20. Data FIFO
-
 21. Frequency Programming
-
 22. VCO
-
-    22.1 VCO and PLL Self-Calibration  
-
+  22.1 VCO and PLL Self-Calibration
 23. Voltage Regulators
-
 24. Output Power Programming
-
 25. Shaping and PA Ramping
-
 26. General Purpose / Test Output Control Pins
-
 27. Asynchronous and Synchronous Serial Operation
-
-    27.1 Asynchronous Serial Operation  
-    27.2 Synchronous Serial Operation  
-
+  27.1 Asynchronous Serial Operation
+  27.2 Synchronous Serial Operation
 28. System Considerations and Guidelines
-
-    28.1 SRD Regulations  
-    28.2 Frequency Hopping and Multi-Channel Systems  
-    28.3 Wideband Modulation When Not Using Spread Spectrum  
-    28.4 Wireless M-Bus  
-    28.5 Data Burst Transmissions  
-    28.6 Continuous Transmissions  
-    28.7 Battery Operated Systems  
-    28.8 Increasing Range  
-
+  28.1 SRD Regulations
+  28.2 Frequency Hopping and Multi-Channel Systems
+  28.3 Wideband Modulation When Not Using Spread Spectrum
+  28.4 Wireless M-Bus
+  28.5 Data Burst Transmissions
+  28.6 Continuous Transmissions
+  28.7 Battery Operated Systems
+  28.8 Increasing Range
 29. Configuration Registers
-
-    29.1 Registers Preserved in Sleep State  
-    29.2 Registers That Lose Programming in Sleep State  
-    29.3 Status Register Details  
-
+  29.1 Registers Preserved in Sleep State
+  29.2 Registers That Lose Programming in Sleep State
+  29.3 Status Register Details
 30. Soldering Information
-
 31. Development Kit Ordering Information
-
 32. References
-
 33. General Information
-
-    33.1 Document History
-
+  33.1 Document History
+</pre>
 </details>
 
 
