@@ -23,7 +23,7 @@ In addition to the steps [outlined in my first guide](https://github.com/ryan262
 
 After explaining a few important concepts, we will go through exactly how to accomplish each of these steps with examples from the datasheet.
 
-This README will heavily reference the official **[TI CC1101 transceiver datasheet](https://www.ti.com/lit/ds/symlink/cc1101.pdf)** as well as parts of the [ESP32 documentation](https://docs.espressif.com/projects/esp-idf/en/stable/esp32/api-reference/peripherals/spi_master.html). This particular repository uses the [PlatformIO IDE extension for VSCode](https://platformio.org/install/ide?install=vscode) for the code implementation, but using the ESP-IDF extension for VSCode is also viable. 
+This README will heavily reference the official **[TI CC1101 transceiver datasheet](https://www.ti.com/lit/ds/symlink/cc1101.pdf)** as well as parts of the [ESP32 documentation](https://docs.espressif.com/projects/esp-idf/en/stable/esp32/api-reference/peripherals/spi_master.html). This particular repository uses the [PlatformIO IDE extension for VSCode](https://platformio.org/install/ide?install=vscode), but using the ESP-IDF extension for VSCode is also viable. 
 
 
 ## Table of Contents
