@@ -105,18 +105,24 @@ To preserve all other default values while only updating the `FOC_PRE_K` field, 
 >Note: An online [binary to hex calculator](https://www.rapidtables.com/convert/number/binary-to-hex.html) can be helpful for converting register values.
 
 ## Radio States
-The CC1101 can only perform specific actions based on what 'state' the radio is set to.
+The CC1101 can only perform specific actions like transmitting a signal if it is in the right state.
 
-The radio control diagram is a map that shows how the radio behaves internally. It is not necessary to understand every part of the diagram, but it is helpful to understand the general concept. The [full state control diagram](#entire_radio) can be found on page 50 of the datasheet. 
+Pictured below is the radio control diagram. It is not necessary to understand every part of the diagram, but it is helpful to understand the general concept. The [full state control diagram](#entire_radio) can be found on page 50 of the datasheet. 
 
+One way to think about radio states is to imagine starting up your car. You can’t just press the start button at any time. It has to be in the correct “state” first, such as being in Park with your foot on the brake. Only when those conditions are met does the “start engine” action work.
+
+In the same way, the CC1101 radio can only perform certain actions when it is in the correct internal state.
 <div align="center">
+   
 ![Simplified Radio Control Diagram](Assets/simplified_state_diagram.png)
-Page 28: Simplified Radio Control Diagram
-</div>
-<br>
-> [!TIP]
-> For example, the radio cannot enter the `TXFIFO_UNDERFLOW` state if it is in the `IDLE` state. It must first move through the required intermediate states like frequency synthesizer calibration and transmit mode.
 
+Page 28: Simplified Radio Control Diagram
+
+</div>
+
+> [!INFO]
+>For example, the radio cannot enter the `TXFIFO_UNDERFLOW` state if it is in the `IDLE` state. It must first move through the required >intermediate states like frequency synthesizer calibration and transmit mode.
+> 
 ## Navigating the Datasheet
 The CC1101 datasheet is around 100 pages long and contains many diagrams, equations, and tables detailing various properties of the device. If you have never worked with a datasheet before, it can be difficult to know where to begin. To approach this, we will work backwards from our goal of transmitting a signal with the CC1101 and think about what properties we need to configure in order to achieve this.
 
