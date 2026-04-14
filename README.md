@@ -117,8 +117,7 @@ The CC1101 datasheet is around 100 pages long and contains many diagrams, equati
 With this mental map, let's analyze the datasheet and find the relevant sections. You will notice many of the earlier sections in the datasheet relate to the physical hardware specifications. This includes **Section 1** (absolute maximum ratings), **Section 2** (operating conditions), and so on. Many of these are not directly relevant to the goal of this project and can largely be ignored.
 
 <details>
-<summary>CC1101 Datasheet Table of Contents</summary>
-
+<summary><strong>CC1101 Datasheet Table of Contents</strong></summary>
 1. Absolute Maximum Ratings
 2. Operating Conditions
 3. General Characteristics
