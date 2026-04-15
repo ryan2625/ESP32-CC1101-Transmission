@@ -105,7 +105,7 @@ To preserve all other default values while only updating the `FOC_PRE_K` field, 
 >Note: An online [binary to hex calculator](https://www.rapidtables.com/convert/number/binary-to-hex.html) can be helpful for converting register values.
 
 ## Radio States
-The concept of a 'radio state' in the CC1101 refers to the device's ability to exist and switch between different operational modes. Essentially, the CC1101 can only perform specific actions like transmitting a signal if it is in the correct radio state.
+The concept of a 'radio state' in the CC1101 refers to the device's ability to exist and switch between different operational modes. Basically, the CC1101 can only perform specific actions like transmitting a signal if it is in the correct radio state.
 
 Pictured below is the simplified Radio Control State diagram. It is not necessary to understand every part of the diagram, but it is helpful to understand the general concept. The [full diagram](#entire_radio) can be found on page 50 of the datasheet. 
 
