@@ -470,7 +470,7 @@ I experimented with a few different values trying to get as close as possible to
 </div>
 <br>
 
-Solving this results in *f<sub>dev</sub>* = **25.4 kHz**. Looking at the [`DEVIATN`](https://github.com/ryan2625/CC1101-TX/blob/main/Assets/DEVIATN.png) register, we can see that bit 7 and bit 3 are unused, while bits 6-4 store the exponent and bits 2-0 store the mantissa. Substituting our exponent value of 4 and the mantissa value of 0, we end up with the binary number `0100 0000`. Converting this value to hexadecimal gives us `0x40`, which we will send to the register. 
+Solving this results in *f<sub>dev</sub>* = **25.4 kHz**. Looking at the [`DEVIATN`](https://github.com/ryan2625/CC1101-TX/blob/main/Assets/DEVIATN.png) register at address `0x15`, we can see that bit 7 and bit 3 are unused, while bits 6-4 store the exponent and bits 2-0 store the mantissa. Substituting our exponent value of 4 and the mantissa value of 0, we end up with the binary number `0100 0000`. Converting this value to hexadecimal gives us `0x40`, which we will send to the register. 
 
 # 4. Bit Timing and Data Rate
 ## **Section 12: Data Rate Programming** Overview
