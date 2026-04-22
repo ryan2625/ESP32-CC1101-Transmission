@@ -379,7 +379,7 @@ Page 75: Frequency Registers
 ### Setting the Frequency in C++
 Most of the coding examples will be shown in the [Sending Data in C++](#7-sending-data-in-c) section of this guide. As a quick reference, we walk through setting the frequency before we move on to the next section of the guide.
 
-We will use the value we calculated earlier, FREQ ≈ `793,994`, that corresponds to setting the frequency to 315 MHz. Remember that communication with the CC1101 starts with a header byte [following a specific format](https://github.com/ryan2625/ESP32-CC1101?tab=readme-ov-file#expected-transaction-format) outlined in my first guide.
+We will use the value we calculated earlier of FREQ ≈ `793,994`, which corresponds to setting the frequency to 315 MHz. Remember that communication with the CC1101 starts with a header byte [following a specific format](https://github.com/ryan2625/ESP32-CC1101?tab=readme-ov-file#expected-transaction-format) outlined in my first guide.
 
 We must do the following to set the frequency:
 
@@ -411,7 +411,7 @@ extern "C" void app_main(void) {
     );
 }
 ```
-Where [`spi_transaction`](https://github.com/ryan2625/CC1101-TX/blob/main/src/main.cpp) is a helper function defined in `main.cpp`. 
+Where [`spi_transaction`](https://github.com/ryan2625/CC1101-TX/blob/main/src/main.cpp) is a helper function defined in `main.cpp`. After running this code, the radio will now be set to transmit at a frequency of 315 MHz.
 
 
 # 3. Modulation Format
