@@ -595,7 +595,7 @@ The Synchronization (sync) word's primary purpose is to mark the exact start of 
 
 More information on the sync word can be found in **Section 14.3: Byte Synchronization**. The sync word value itself is arbitrary, but the receiver and the transmitter must match each other if it is used.
 
-The CC1101 recommends implementing a 4-byte sync word, stored in the `SYNC1` at `0x04` and `SYNC0` at `0x05` registers. To reach the recommended 4 bytes in a sync word, we will have to send the `MDMCFG2.SYNC_MODE` field either a 3 (`011`) or a 7 (`111`). This will duplicate the 2 bytes we have stored in `SYNC1` and `SYNC0` and send 4 bytes in total when we transmit data. 
+The CC1101 recommends implementing a 4-byte sync word, stored in the `SYNC1` and `SYNC0` registers at addresses `0x04` and `0x05` respectively. To reach the recommended 4 bytes in a sync word, we will have to send the `MDMCFG2.SYNC_MODE` field either a 3 (`011`) or a 7 (`111`). This will duplicate the 2 bytes we have stored in `SYNC1` and `SYNC0` and send 4 bytes in total when we transmit data. 
 
 <div align='center'>
 
