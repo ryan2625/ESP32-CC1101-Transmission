@@ -413,8 +413,7 @@ extern "C" void app_main(void) {
 ```
 Where [`spi_transaction`](https://github.com/ryan2625/CC1101-TX/blob/main/src/main.cpp) is a helper function defined in `main.cpp`. After running this code, the radio will now be set to transmit at a frequency of 315 MHz.
 
-#### Register Table Summary
-
+#### Frequency Register Summary
 <div align='center'>
 
 | Register | Register Address | Updated Register Value | Purpose                  |
@@ -483,8 +482,7 @@ I experimented with a few different values trying to get as close as possible to
 
 Solving this results in *f<sub>dev</sub>* = **25.4 kHz**. Looking at the [`DEVIATN`](https://github.com/ryan2625/CC1101-TX/blob/main/Assets/DEVIATN.png) register at address `0x15`, we can see that bit 7 and bit 3 are unused (set to `0`), while bits 6-4 store the exponent and bits 2-0 store the mantissa. Using our exponent value of 4 and the mantissa value of 0, we end up with the binary number `0100 0000`. Converting this value to hexadecimal gives us `0x40`, which we will send to the register. 
 
-#### Register Table Summary
-
+#### Modulation Register Summary
 <div align='center'>
 
 | Register            | Register Address | Updated Register Value | Purpose                           |
@@ -556,8 +554,7 @@ Since the data rate mantissa is the only field contained within the [`MDMCFG3`](
 
 We will store *DRATE_E* = 9 in the [`MDMCFG4`](https://github.com/ryan2625/CC1101-TX/blob/main/Assets/MDMCFG.png) register, which also contains the fields used to configure channel bandwidth. It is good practice to preserve the default values in these registers if we don't need to modify them. Therefore, we will send the bits `10` for `CHANBW_E`, `00` for `CHANBW_M`, and `1001` for `DRATE_E`. We end up with `10001001` = `0x89`. 
 
-#### Register Table Summary
-
+#### Data Rate Register Summary
 <div align='center'>
 
 | Register        | Register Address | Updated Register Value | Purpose            |
@@ -585,8 +582,7 @@ Below is a table showing what power output corresponds to what setting value. Th
 ## Setting the Output Power
 The `PATABLE` register is located at address `0x3E`. Since we are only setting a single power output, we will just be sending one byte to this address. Based on table 39, `0x51` provides a reasonable midrange transmit power for the 315 MHz band; we will send this value to the register. **Section 10.6** provides more information on how to access the `PATABLE` register.
 
-#### Register Table Summary
-
+#### Output Power Register Summary
 <div align='center'>
 
 | Register   | Register Address | Updated Register Value | Purpose               |
@@ -858,8 +854,7 @@ extern "C" void app_main(void) {
 >
 ></div> 
 
-#### Register Table Summary
-
+#### Transmission Mechanics Register Summary
 <div align='center'>
 
 | Register               | Register Address | Updated Register Value | Purpose                                          |
@@ -867,12 +862,12 @@ extern "C" void app_main(void) {
 | `MDMCFG1.NUM_PREAMBLE` | `0x13` | `0x22` | 4-byte preamble                                  |
 | `SYNC1` | `0x04` | `0xD3` | Sync word byte 1                                 |
 | `SYNC0` | `0x05` | `0x91` | Sync word byte 0                                 |
-| `MDMCFG2.SYNC_MODE` | `0x12` | `0x03` | 30/32 sync word  |
+| `MDMCFG2.SYNC_MODE` | `0x12` | `0x03` | Repeated 2-byte sync word  |
 | `PKTCTRL0.LENGTH_CONFIG` | `0x08` | `0x00` | Fixed packet length mode                         |
 | `PKTLEN` | `0x06` | `0x05` | 5-byte packet length                             |
 | `MCSM0.FS_AUTOCAL` | `0x18` | `0x14` | Auto-calibrate when entering TX mode             |
 | `MCSM1.TXOFF_MODE` | `0x17` | `0x31` | Enter FSTXON after TX completes                  |
-| `FIFOTHR.FIFO_THR` | `0x03` | `0x0E` | TX FIFO threshold = 5 bytes                      |
+| `FIFOTHR.FIFO_THR` | `0x03` | `0x0E` | 5-byte TX FIFO threshold                      |
 | `IOCFG0.GDO0_CFG` | `0x02` | `0x02` | GDO0 signals TX FIFO threshold                   |
 | TX FIFO | `0x3F` | `0x01` x 7 | Payload bytes loaded for transmission            |
 
