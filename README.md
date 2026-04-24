@@ -422,9 +422,9 @@ Where [`spi_transaction`](https://github.com/ryan2625/CC1101-TX/blob/main/src/ma
 | `FREQ1` | `0x0E` | `0x1D` | Frequency  byte 1 |
 | `FREQ0` | `0x0F` | `0x8A` | Frequency  byte 0 |
 
-> Note: Each section will provide a summary of its relevant register values and locations. The full table can be found at the [end of this guide](#register_summary).
-
 </div>
+
+> Note: Each section will provide a summary of its relevant register values and locations. The full table can be found at the [end of this guide](#register_summary).
 
 # 3. Modulation Format
 ## **Section 16: Modulation Formats** Overview
