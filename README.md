@@ -77,7 +77,7 @@ A 'register' inside of the CC1101 is an addressable location that contains a byt
 
 Alternatively, some registers have unused bits or may contain multiple fields. In these cases, since multiple fields share the same register, **we must modify only the relevant bits while leaving the others unchanged**. 
 
-Using the `FOCCFG` register as an example, suppose we want to set the `FOC_PRE_K` field to `11`. The default bits in this register shown by the 'Reset' column are `0011 0110`. 
+Using the `FOCCFG` register as an example, suppose we only want to set the `FOC_PRE_K` field to `11`. The default bits in this register shown by the 'Reset' column are `0011 0110`. 
 <br>
 
 <div align="center">
@@ -89,16 +89,16 @@ Using the `FOCCFG` register as an example, suppose we want to set the `FOC_PRE_K
 </div>
 <br>
 
-To preserve all other default values while only updating the `FOC_PRE_K` field, the resulting byte we send will be `0011 1110` (or `0x3E` in hexadecimal). The table below shows the exact bit changes when we update this register.
+To preserve all other default values while updating the `FOC_PRE_K` field to `11`, the resulting byte we send will be `0011 1110` (or `0x3E` in hexadecimal). The table below shows the exact bit changes when we update this register.
 <div align="center">
 
 | Bits | Field             | Default | New Value |
 |------|-------------------|--------|----------|
 | 7:6  | Not used          | `00`     | `00`       |
-| 5    | FOC_BS_CS_GATE    | `1`      | `1`        |
-| 4:3  | FOC_PRE_K[1:0]    | `10`     | **`11`**   |
-| 2    | FOC_POST_K        | `1`      | `1`        |
-| 1:0  | FOC_LIMIT[1:0]    | `10`     | `10`       |
+| 5    | `FOC_BS_CS_GATE`    | `1`      | `1`        |
+| 4:3  | `FOC_PRE_K`[1:0]    | `10`     | **`11`**   |
+| 2    | `FOC_POST_K`        | `1`      | `1`        |
+| 1:0  | `FOC_LIMIT`[1:0]    | `10`     | `10`       |
 
 </div>
 
@@ -246,11 +246,11 @@ With this mental map, let's analyze the datasheet and find the relevant sections
 Whenever we are writing firmware for an embedded device, we need to know how to communicate with the system and if there are any peculiar setup details.
 [My first writeup](https://github.com/ryan2625/ESP32-CC1101/tree/main?tab=readme-ov-file#esp32-cc1101) for the CC1101 described some of the sections about general configuration already, but we will briefly revisit them below.
 
-- **Section 10: 4-Wire Serial Configuration and Data Interface** - This section tells us the protocol to use when communicating with the chip ([SPI](https://www.analog.com/en/resources/analog-dialogue/articles/introduction-to-spi-interface.html)) and how to access registers in the CC1101. This is one of the first and most important sections to understand when writing firmware for this chip, as everything after this point builds off of this section.
+- **Section 10: 4-Wire Serial Configuration and Data Interface** ~ This section tells us the protocol to use when communicating with the chip ([SPI](https://www.analog.com/en/resources/analog-dialogue/articles/introduction-to-spi-interface.html)) and how to access registers in the CC1101. This is one of the first and most important sections to understand when writing firmware for this chip, as everything after this point builds off of this section.
 
-- **Section 29: Configuration Registers** - Here we will find the addresses for all of the registers in the radio. These include status registers as well as configuration registers that hold our radio's signal parameters. Each section in the datasheet lists its relevant registers, so **Section 29** will be referenced frequently.
+- **Section 29: Configuration Registers** ~ Here we will find the addresses for all of the registers in the radio. These include status registers as well as configuration registers that hold our radio's signal parameters. Each section in the datasheet lists its relevant registers, so **Section 29** will be referenced frequently.
 
-- **Section 19: Radio Control** - Describes important setup details and how the radio operates internally through state transitions. **Section 19.0** shows us the state control diagram, while **Section 19.1** tells us the exact sequence the device expects when it powers on.
+- **Section 19: Radio Control** ~ Describes important setup details and how the radio operates internally through state transitions. **Section 19.0** shows us the state control diagram, while **Section 19.1** tells us the exact sequence the device expects when it powers on.
 
 ---
 
@@ -268,22 +268,22 @@ Every radio transmission has specific parameters that must be configured, regard
 </div>
 
 
-- **Section 21: Frequency Programming** - Provides the relevant equations and registers for setting up the frequency the CC1101 will transmit at. You will also find information about setting up different frequency channels, where you can switch between multiple frequencies quickly (such as 315 MHz, 433 MHz, and 915 MHz).
+- **Section 21: Frequency Programming** ~ Provides the relevant equations and registers for setting up the frequency the CC1101 will transmit at. You will also find information about setting up different frequency channels, where you can switch between multiple frequencies quickly (such as 315 MHz, 433 MHz, and 915 MHz).
 
-- **Section 16: Modulation Formats** - Talks about the different types of modulation formats the CC1101 is capable of implementing.
+- **Section 16: Modulation Formats** ~ Talks about the different types of modulation formats the CC1101 is capable of implementing.
 
-- **Section 12: Data Rate Programming** - Discusses how to calculate and configure the data rate, which is how fast we send bits with our radio. 
+- **Section 12: Data Rate Programming** ~ Discusses how to calculate and configure the data rate, which is how fast we send bits with our radio. 
 
-- **Section 24: Output Power Programming** - Details the relevant registers for setting the output power of the radio. 
+- **Section 24: Output Power Programming** ~ Details the relevant registers for setting the output power of the radio. 
 
 - **Section 15: Packet Handling Hardware Support** and **Section 20: Data FIFO** - These sections don't define explicit parameters about the signal, but rather how we will structure and send data with the signal.
 ---
 
 ### Optional Sections
-- **Section 8: Configuration Overview** - Description of different CC1101 parameters and capabilities.
-- **Section 9: Configuration Software** - Suggestions on software to assist in calculating register values. This guide will not be using the recommended configuration software (SmartRF Studio); rather, we will be solving the datasheet equations by hand.
+- **Section 8: Configuration Overview** ~ Description of different CC1101 parameters and capabilities.
+- **Section 9: Configuration Software** ~ Suggestions on software to assist in calculating register values. This guide will not be using the recommended configuration software (SmartRF Studio); rather, we will be solving the datasheet equations by hand.
 - **Section 14: Demodulator, Symbol Synchronizer, and Data Decision** - Offers context for how the CC1101 handles packets. 
-- **Section 18: Forward Error Correction with Interleaving** - Describes optional error correction techniques used to improve reliability during transmission. We will not be investigating this section in this guide.
+- **Section 18: Forward Error Correction with Interleaving** ~ Describes optional error correction techniques used to improve reliability during transmission. We will not be investigating this section in this guide.
 
 # 2. Frequency Programming
 ## **Section 21: Frequency Programming** Overview
@@ -316,7 +316,7 @@ There are multiple equations in the frequency section. The equation regarding IF
 </div>
 <br>
 
-One thing to be aware of is a common variable found in many of the equations in the CC1101 data sheet, which is *f<sub>xosc</sub>*. This variable is referring to the frequency at which the [crystal oscillator](https://www.epsondevice.com/crystal/en/techinfo/column/crystal-oscillator/osc.html) vibrates. According to **Section 4.4** of the data sheet, this value is between 26-27 MHz:
+One thing to be aware of is a common variable found in many of the equations in the CC1101 data sheet, which is *f<sub>xosc</sub>*. This variable is referring to the rate at which the [crystal oscillator](https://www.epsondevice.com/crystal/en/techinfo/column/crystal-oscillator/osc.html) vibrates. According to **Section 4.4** of the data sheet, this value is between 26-27 MHz:
 
 <div align="center">
 
@@ -335,7 +335,7 @@ The main equation of importance to calculate our carrier frequency is the one be
 </div>
 <br>
 
-Where *f<sub>carrier</sub>* is the desired transmit signal (such as 315 MHz), *f<sub>xosc</sub>* is the frequency at which the crystal oscillator vibrates (26 MHz), and *FREQ* is the value we need to program into the frequency registers discussed above. The other variables regarding channels such as *CHAN* and *CHANSPC_M* can be set to zero to simplify the equation (since we are not using any channel functionality on the CC1101). The resulting simplified equation is:
+Where *f<sub>carrier</sub>* is the desired transmit frequency (such as 315 MHz), *f<sub>xosc</sub>* is the rate at which the crystal oscillator vibrates (26 MHz), and *FREQ* is the value we need to program into the frequency registers discussed above. The other variables regarding channels such as *CHAN* and *CHANSPC_M* can be set to zero to simplify the equation (since we are not using any channel functionality on the CC1101). The resulting simplified equation is:
 
 <div align="center">
 
@@ -429,7 +429,7 @@ Page 77: Setting Table for the `MDMCFG2.MOD_FORMAT` Field at Address `0x12`
 </div>
 
 ## Scientific Notation
-2-FSK works by periodically shifting the frequency by amount called the 'deviation.' The CC1101 uses two things to derive the value of the deviation: the mantissa and the exponent. 
+2-FSK works by periodically shifting the frequency by amount called the 'deviation.' The CC1101 uses two things to derive the value of the deviation: a mantissa and an exponent. 
 
 The mantissa allows for fine adjustment of the deviation, while the exponent scales the deviation value quickly. These concepts are also used in [Scientific Notation](https://en.wikipedia.org/wiki/Scientific_notation). The mantissa and exponent values are configured in the `DEVIATN.DEVIATION_M` and `DEVIATN.DEVIATION_E` fields respectively at address `0x15`. 
 
@@ -470,7 +470,7 @@ I experimented with a few different values trying to get as close as possible to
 </div>
 <br>
 
-Solving this results in *f<sub>dev</sub>* = **25.4 kHz**. Looking at the [`DEVIATN`](https://github.com/ryan2625/CC1101-TX/blob/main/Assets/DEVIATN.png) register at address `0x15`, we can see that bit 7 and bit 3 are unused, while bits 6-4 store the exponent and bits 2-0 store the mantissa. Substituting our exponent value of 4 and the mantissa value of 0, we end up with the binary number `0100 0000`. Converting this value to hexadecimal gives us `0x40`, which we will send to the register. 
+Solving this results in *f<sub>dev</sub>* = **25.4 kHz**. Looking at the [`DEVIATN`](https://github.com/ryan2625/CC1101-TX/blob/main/Assets/DEVIATN.png) register at address `0x15`, we can see that bit 7 and bit 3 are unused (set to `0`), while bits 6-4 store the exponent and bits 2-0 store the mantissa. Using our exponent value of 4 and the mantissa value of 0, we end up with the binary number `0100 0000`. Converting this value to hexadecimal gives us `0x40`, which we will send to the register. 
 
 # 4. Bit Timing and Data Rate
 ## **Section 12: Data Rate Programming** Overview
@@ -479,8 +479,6 @@ The data rate of the radio determines how fast data is transmitted or received. 
 The CC1101 will then use the mantissa & exponent values to derive the data rate in baud (which is a unit of transmission speed). The relevant fields for this section are `MDMCFG3.DRATE_M` and `MDMCFG4.DRATE_E`.
 
 As stated previously, the data rate and frequency deviation should be related to one another through a modulation index. For this guide, we will instead simply use a safe baud rate of 25 kBaud. 
-
->Note: Having a data rate of 25 kBaud  means we are transmitting 25,000 symbols per second, where a symbol is defined as the radio frequency state that represents the data. The only important part to understand about symbols now is that for 2-FSK, 25,000 symbols per second = 25,000 bits per second.
 
 <div align="center">
 
@@ -537,9 +535,9 @@ We will store *DRATE_E* = 9 in the [`MDMCFG4`](https://github.com/ryan2625/CC110
 
 <div align='center'>
 
-| Register Name | Register Address | Updated Register Value |
+| Register/Field Name | Register Address | Updated Register Value |
 |---------------|------------------|----------------|
-| `MDMCFG4` | `0x10` | `0x89` |
+| `MDMCFG4.DRATE_E` | `0x10` | `0x89` |
 | `MDMCFG3` | `0x11` | `0xF8` |
 
 </div>
@@ -579,7 +577,9 @@ Preamble bits (or bytes) are a sequence of alternating bits sent at the start of
 
 The second purpose is that they assist in synchronizing the transmission timing between the receiver and the transmitter to ensure data is processed correctly. The overall purpose of the preamble bits is to help tune the receiver before meaningful data is sent.
 
-In the CC1101, the amount of preamble bytes sent is configured in the `MDMCFG1.NUM_PREAMBLE` field at `0x13`. The datasheet recommends using 4 bytes for the preamble (32 bits) which corresponds to setting 2 of the field. When the radio enters `TX` mode, it will keep transmitting the preamble bytes you configured infinitely until a byte is written to the TX FIFO (we will go over what this looks like shortly). 
+In the CC1101, the amount of preamble bytes sent is configured in the `MDMCFG1.NUM_PREAMBLE` field at `0x13`. The datasheet recommends using 4 bytes for the preamble (32 bits) which corresponds to setting 2 of the field. 
+
+>When the radio enters `TX` mode, it will keep transmitting the preamble bytes you configured infinitely until a byte is written to the TX FIFO (we will go over what this looks like shortly). 
 
 <div align='center'>
 
@@ -685,7 +685,7 @@ There are three different scenarios in `TX` mode that can occur either when writ
 3. TX FIFO Overflow occurs
 
 ---
-The first scenario is activated when a transmission is completed without any errors. In this case, the `MCSM1.TXOFF_MODE` field at address `0x17` will automatically put the radio into one of four states.
+The first scenario is activated when a transmission is completed without any errors. In this case, the `MCSM1.TXOFF_MODE` field at address `0x17` will automatically put the radio into one of four states you can see in the image below.
 <div align='center'>
 
 <img src="Assets/TXOFF_MODE_reg.png" width="90%">
@@ -695,11 +695,12 @@ Page 81: `MCSM1.TXOFF_MODE` Field
 </div>
 <br>
 
+---
 The second scenario is entering the `TXFIFO_UNDERFLOW` state. This state occurs when the TX FIFO becomes empty in the middle of transmitting a packet. This error primarily happens when we specify a packet length, but the TX FIFO has less bytes than the number we configured. 
 > For example, if we are in static packet length mode and send the `PKTLEN` register the value `0x0A`, this will make our expected packet length 10 bytes. If we only fill our TX FIFO with 5 bytes and enter 'TX' mode, we will run out of bytes to send. In this scenario, the radio will enter the error state `TXFIFO_UNDERFLOW`.
 
-
-The third scenario, TX FIFO Overflow, occurs when we fill the TX FIFO with more than 64 bytes of data. In this scenario, there isn't a specific state the radio enters like there is for underflow. Instead, the data in the FIFO might become corrupted and the radio may behave unpredictably. 
+---
+The third scenario, TX FIFO Overflow, occurs when we fill the TX FIFO with more than 64 bytes of data. In this scenario, there isn't a specific state the radio enters like there is for underflow. Instead, the data in the FIFO might become corrupted and the radio may behave unpredictably.
 
 > [!IMPORTANT]
 > Suppose we set our packet length as 10 but fill the TX FIFO with 20 bytes. Upon completing a transmission, we may end up having leftover bytes sitting in the FIFO. This is not considered TX FIFO Overflow. Those bytes just remain there until they are emptied or sent in the next transmission.
@@ -707,7 +708,7 @@ The third scenario, TX FIFO Overflow, occurs when we fill the TX FIFO with more 
 ---
 
 #### Error Recovery
-We must put the radio in a known safe state after we encounter an error. A common safe state to enter is the `IDLE` state. This helps the radio reset itself to a predictable baseline, which is why we immediately enter this state when we power on the device. 
+We must put the radio in a known safe state after we encounter an error such as `TXFIFO_UNDERFLOW` or TX FIFO Overflow. A common safe state to enter is the `IDLE` state. This helps the radio reset itself to a predictable baseline, which is why we immediately enter this state when we power on the device. 
 
 The command strobe to send for error recovery in `TX` mode is `SFTX` at address `0x3B`. This will empty (flush) the TX FIFO and put the device in the `IDLE` state. 
 
@@ -727,7 +728,7 @@ The maximum value of `FIFO_BYTES_AVAILABLE` is 15, or `1111`. When `FIFO_BYTES_A
 ## TX FIFO Threshold
 As stated earlier, the TX FIFO is a 64-byte buffer that holds the data you will transmit. Causing overflow or underflow in this buffer can cause error states and lead to unpredictable radio behavior. In addition to the chip status byte, there is another optional mechanism to assist us with managing the TX FIFO called the FIFO threshold.
 
-In `TX` mode, the FIFO threshold is essentially a way to warn us when the number of bytes in the TX FIFO crosses a certain level. We can set the threshold by sending a value to the `FIFOTHR.FIFO_THR` register field at `0x03`. Keep in mind this threshold is simply a warning, and does not prevent underflow on its own.
+In `TX` mode, the FIFO threshold is essentially a way to warn us when the number of bytes in the TX FIFO crosses a certain level. We can set the threshold by sending a value to the `FIFOTHR.FIFO_THR` register field at `0x03`. Keep in mind this threshold is simply a warning, and does not prevent errors on its own.
 
 For example, if we send the value `1110` to the register, we will get a warning when there is only 5 bytes left in the TX FIFO. The mapping of values to thresholds is seen below.
 
@@ -786,7 +787,7 @@ Page 56: FIFO Thresholds
 </div> 
 
 ### Accessing the `GDO0` Pin
-Every GPIO pin must be configured before it can be used. So before we read the `GDO0` pin level, we must configure the pin with the [`gpio_set_direction`](https://docs.espressif.com/projects/esp-idf/en/stable/esp32/api-reference/peripherals/gpio.html#_CPPv418gpio_set_direction10gpio_num_t11gpio_mode_t) method from the ESP-IDF API. This method has two parameters:
+We will use a standard GPIO pin on the ESP32 to access the CC1101's `GDO0` pin. Every GPIO pin must be configured before it can be used. So prior to reading the `GDO0` pin level, we must first configure the pin with the [`gpio_set_direction`](https://docs.espressif.com/projects/esp-idf/en/stable/esp32/api-reference/peripherals/gpio.html#_CPPv418gpio_set_direction10gpio_num_t11gpio_mode_t) method from the ESP-IDF API. This method has two parameters:
 - `gpio_num`: Which GPIO pin you are configuring. In our case, it will be the ESP32 pin `GDO0` is connected to.
 - `mode`: Sets if we can send or receive data on this pin. 
 
@@ -955,7 +956,7 @@ I (4367) CC1101: GDO0 level: 0
 I (4367) main_task: Returned from app_main()
 ```
 ---
-The first part of the log is printed after loading 7 bytes into the TX FIFO and configuring all of our registers. As the log states, these are all of our configuration values. I've attached comments to some of the logs below regarding their value or function...
+Below is the first part of the log that is printed after loading 7 bytes into the TX FIFO and configuring all of our registers. As the log states, these are all of our configuration values. I've attached comments to some of the logs below regarding their value or function...
 ```rust
 I (2297) CC1101: ========== ALL CONFIG VALUES ==========
 I (2297) CC1101: Operation: READ AUTOCAL | 0x00 0x14
