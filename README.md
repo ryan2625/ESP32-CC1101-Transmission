@@ -96,9 +96,9 @@ To preserve all other default values while updating the `FOC_PRE_K` field to `11
 |------|-------------------|--------|----------|
 | 7:6  | Not used          | `00`     | `00`       |
 | 5    | `FOC_BS_CS_GATE`    | `1`      | `1`        |
-| 4:3  | `FOC_PRE_K`[1:0]    | `10`     | **`11`**   |
+| 4:3  | `FOC_PRE_K[1:0]`    | `10`     | **`11`**   |
 | 2    | `FOC_POST_K`        | `1`      | `1`        |
-| 1:0  | `FOC_LIMIT`[1:0]    | `10`     | `10`       |
+| 1:0  | `FOC_LIMIT[1:0]`    | `10`     | `10`       |
 
 </div>
 
