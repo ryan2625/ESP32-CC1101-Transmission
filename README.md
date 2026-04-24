@@ -956,7 +956,7 @@ I (4367) CC1101: GDO0 level: 0
 I (4367) main_task: Returned from app_main()
 ```
 ---
-Below is the first part of the log that is printed after loading 7 bytes into the TX FIFO and configuring all of our registers. As the log states, these are all of our configuration values. I've attached comments to some of the logs below regarding their value or function...
+Below is the first part of the log. This log is printed after we loaded 7 bytes into the TX FIFO and configured all of our registers. As the log states, these are all of our configuration values. I've attached comments to some of the logs below regarding their value or function...
 ```rust
 I (2297) CC1101: ========== ALL CONFIG VALUES ==========
 I (2297) CC1101: Operation: READ AUTOCAL | 0x00 0x14
