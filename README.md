@@ -291,7 +291,7 @@ Frequency programming in the CC1101 is a channel-oriented system. This means tha
 
 Note that parameters such as the frequency can only be changed while the radio is in the `IDLE` state.
 
-The frequency is stored as a 24-bit word split across three registers containing 1 byte each: `FREQ2`, `FREQ1`, and `FREQ0`. Table 45 shows the  addresses to each register (`0x0D`, `0x0E`, and `0x0F` respectively).
+The frequency is stored as a 24-bit word split across three registers containing 1 byte each: `FREQ2`, `FREQ1`, and `FREQ0`. Table 45 shows part of the CC1101's address space, where you can see the addresses of each frequency register (`0x0D`, `0x0E`, and `0x0F` respectively).
 
 > [!IMPORTANT]
 > This 24 bit word is not representing a frequency such as 315 MHz. Rather, it is a value the CC1101 will use to derive the frequency using its equations. Also, a 'word' in this context simply means a collection of bits.
