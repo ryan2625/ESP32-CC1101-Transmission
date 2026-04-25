@@ -565,7 +565,7 @@ We will store *DRATE_E* = 9 in the [`MDMCFG4`](https://github.com/ryan2625/CC110
 | Register        | Register Address | Entire Updated Register Value | Purpose            |
 | --------------- | ---------------: | ---------------------: | ------------------ |
 | `MDMCFG4.DRATE_E` | `0x10` | `0x89` | Data rate exponent |
-| `MDMCFG3.DRATE_M` | `0x11` | `0xF8` | Data rate mantissa |
+| `MDMCFG3` | `0x11` | `0xF8` | Data rate mantissa |
 
 
 </div>
