@@ -442,7 +442,7 @@ Page 77: Setting Table for the `MDMCFG2.MOD_FORMAT` Field at Address `0x12`
 </div>
 
 ## Scientific Notation
-2-FSK works by periodically shifting the frequency by amount called the 'deviation.' The CC1101 uses two things to derive the value of the deviation: a mantissa and an exponent. 
+2-FSK works by periodically shifting the frequency by an amount called the 'deviation.' The CC1101 uses two things to derive the value of the deviation: a mantissa and an exponent. 
 
 The mantissa allows for fine adjustment of the deviation, while the exponent scales the deviation value quickly. These concepts are also used in [Scientific Notation](https://en.wikipedia.org/wiki/Scientific_notation). The mantissa and exponent values are configured in the `DEVIATN.DEVIATION_M` and `DEVIATN.DEVIATION_E` fields respectively at address `0x15`. 
 
@@ -473,7 +473,7 @@ In practice, the frequency deviation and data rate values should be chosen toget
 
 Since the `DEVIATN` register uses 3 bits for the exponent and 3 bits for the mantissa, each field can hold a value from `000` to `111`. This means there are 8 different valid values for each part, leading to a total of 64 possible combinations between them. 
 
-I experimented with a few different values trying to get as close as possible to 25 kHz, and the best combination I came up with was *DEVIATION_M* = 0 and *DEVIATION3_E* = 4. This gives us the equation:
+I experimented with a few different values trying to get as close as possible to 25 kHz, and the best combination I came up with was *DEVIATION_M* = 0 and *DEVIATION_E* = 4. This gives us the equation:
 
 <div align="center">
 
@@ -490,11 +490,13 @@ Solving this results in *f<sub>dev</sub>* = **25.4 kHz**. Looking at the [`DEVIA
 
 | Register            | Register Address | Updated Register Value | Purpose                           |
 | ------------------- | ---------------: | ---------------------: | --------------------------------- |
-| `MDMCFG2.MOD_FORMAT` | `0x12` | `0x03` | 2-FSK modulation format  |
+| `MDMCFG2.MOD_FORMAT` | `0x12` | `0x00` | 2-FSK modulation format  |
 | `DEVIATN.DEVIATION_E` | `0x15` | `0x40` | Frequency deviation exponent      |
 | `DEVIATN.DEVIATION_M` | `0x15` | `0x40` | Frequency deviation mantissa      |
 
 </div>
+
+>Note: The `MDMCFG2` register can be set to `0x00` now, but will later be changed because this register contains the modulation format and another important field we will change later on in this guide. Additionally, the register value is identical for `DEVIATN.DEVIATION_M` and `DEVIATN.DEVIATION_E` because they share the same register, even though the field values themselves are different.
 
 # 4. Bit Timing and Data Rate
 ## **Section 12: Data Rate Programming** Overview
@@ -1036,7 +1038,7 @@ I (2337) CC1101: Operation: READ IOCFG0 | 0x00 0x02
 // Our TXFIFO Threshold is 5 bytes
 I (2347) CC1101: Operation: READ FIFOTHR | 0x00 0x0E 
 // MCSM1 is the register for TXOFF_MODE. We set this field to 01, which essentially just means
-// that the radio will send the strobe FSTXON after a transmission is complete. This is a state
+// that the radio will enter the state FSTXON after a transmission is complete via the SFSTXON strobe. This is a state
 // that performs some calibration steps that allows us to enter TX mode faster the next time
 // we need to.
 I (2347) CC1101: Operation: READ MCSM1 | 0x00 0x31
@@ -1113,7 +1115,7 @@ Because of that misalignment, the first packet appears truncated. The full 5 byt
 ---
 The second issue is the actual bytes logged in the second transmission. It contains the 5 bytes `D3 91 01 01 DA`. The first two are the sync word, the next two are the remaining data from the TX FIFO, and the last byte is mysterious. 
 
-At first, I thought similar to how buffer underflow works in languages like C/CPP, the radio might have underflowed and grabbed the last value from the register in the address space below the TX FIFO, which would be `PATABLE`. 
+At first, I thought similar to how buffer underflow works in languages like C/C++, the radio might have underflowed and grabbed the last value from the register in the address space below the TX FIFO, which would be `PATABLE`. 
 
 This wouldn't make sense though, as there was no byte `DA` ever programmed into the `PATABLE` register. We will just have to dismiss this byte as random, nondeterministic noise sent when the TX FIFO underflowed.
 
@@ -1156,7 +1158,7 @@ Into roughly the equivalent:
     SPIClass radioSPI(VSPI);
     radioSPI.begin(18,  19, 23, 5);
 ```
-The code mapping of the two sections aren't exactly 1 to 1, but they essentially accomplish the same goal. 
+The code mapping of the two sections isn't exactly 1 to 1, but they essentially accomplish the same goal. 
 
 - `SPIClass radioSPI(VSPI);` selects the SPI host to use
 
@@ -1251,7 +1253,7 @@ extern "C" void app_main(void)
 }
 ```
 
-Into just this:
+Into (approximately) just this:
 ```cpp
     CC1101 radio = new Module(5, 4, RADIOLIB_NC, RADIOLIB_NC, radioSPI);
     int state;
@@ -1295,7 +1297,7 @@ Figure 25: Complete Radio Control State Diagram
 | `FREQ2` | `0x0D` | `0x0C` | Frequency  byte 2 |
 | `FREQ1` | `0x0E` | `0x1D` | Frequency  byte 1 |
 | `FREQ0` | `0x0F` | `0x8A` | Frequency  byte 0 |
-| `MDMCFG2.MOD_FORMAT` | `0x12` | `0x03` | 2-FSK modulation format  |
+| `MDMCFG2.MOD_FORMAT` | `0x12` | `0x03` | 2-FSK modulation format / Sync Mode  |
 | `DEVIATN.DEVIATION_E` | `0x15` | `0x40` | Frequency deviation exponent      |
 | `DEVIATN.DEVIATION_M` | `0x15` | `0x40` | Frequency deviation mantissa      |
 | `MDMCFG4.DRATE_E` | `0x10` | `0x89` | Data rate exponent |
