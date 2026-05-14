@@ -25,7 +25,7 @@ After explaining a few important concepts, we will go through exactly how to acc
 
 This README will heavily reference the official **[TI CC1101 transceiver datasheet](https://www.ti.com/lit/ds/symlink/cc1101.pdf)** as well as parts of the [ESP32 documentation](https://docs.espressif.com/projects/esp-idf/en/stable/esp32/api-reference/peripherals/spi_master.html). This particular repository uses the [PlatformIO IDE extension for VSCode](https://platformio.org/install/ide?install=vscode), but using the ESP-IDF extension for VSCode is also viable. 
 
-> Please see the guidelines on [contributing & AI use](https://github.com/ryan2625/ESP32-CC1101-Transmission/blob/main/CONTRIBUTING.md#ai-use) in this project.
+> Please see this project's guidelines for [contributing & AI use](https://github.com/ryan2625/ESP32-CC1101-Transmission/blob/main/CONTRIBUTING.md#ai-use).
 
 ## Table of Contents
 
