@@ -277,7 +277,7 @@ Every radio transmission has specific parameters that must be configured, regard
 
 - **Section 24: Output Power Programming** ~ Details the relevant registers for setting the output power of the radio. 
 
-- **Section 15: Packet Handling Hardware Support** and **Section 20: Data FIFO** - These sections don't define explicit parameters about the signal, but rather how we will structure and send data with the signal.
+- **Section 15: Packet Handling Hardware Support** and **Section 20: Data FIFO** ~ These sections don't define explicit parameters about the signal, but rather how we will structure and send data with the signal.
 ---
 
 ### Optional Sections
