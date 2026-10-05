@@ -283,7 +283,7 @@ Every radio transmission has specific parameters that must be configured, regard
 ### Optional Sections
 - **Section 8: Configuration Overview** ~ Description of different CC1101 parameters and capabilities.
 - **Section 9: Configuration Software** ~ Suggestions on software to assist in calculating register values. This guide will not be using the recommended configuration software (SmartRF Studio); rather, we will be solving the datasheet equations by hand.
-- **Section 14: Demodulator, Symbol Synchronizer, and Data Decision** - Offers context for how the CC1101 handles packets. 
+- **Section 14: Demodulator, Symbol Synchronizer, and Data Decision** ~ Offers context for how the CC1101 handles packets. 
 - **Section 18: Forward Error Correction with Interleaving** ~ Describes optional error correction techniques used to improve reliability during transmission. We will not be investigating this section in this guide.
 
 # 2. Frequency Programming
